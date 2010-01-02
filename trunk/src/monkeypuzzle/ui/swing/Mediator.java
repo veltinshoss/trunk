@@ -130,6 +130,7 @@ public class Mediator
 	public void displayErrorDialog(final String message, final Throwable cause)
 	{
 		this.errorHandler.displayErrorDialog(message, cause);
+		cause.printStackTrace();
 	}
 
 	public void fireHighlightChangeListeners(final BackupFile bfd,
