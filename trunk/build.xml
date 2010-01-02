@@ -116,6 +116,7 @@ Targets:
 				<fileset dir="${lib}/runtime/" includes="**/**.jar"/>
 				<pathelement location="${classes}" />
 			</classpath>
+			<out name="sun" />
 <!--			<in name="monkeypuzzle" /> -->
 			<topclass name="${mainclass}" />
 		</classdepandjar>
