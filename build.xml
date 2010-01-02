@@ -1,0 +1,330 @@
+<project name="monkeypuzzle" default="help" basedir=".">
+
+	<taskdef name="classdepandjar" classname="org.jini.rio.tools.ant.ClassDepAndJarTask">
+		<classpath>
+			<pathelement location="./lib/classdepandjar.jar" />
+		</classpath>
+	</taskdef>
+
+
+
+	<property environment="env" />
+
+	<property name="src" value="./src" />
+	<property name="dist" value="./dist" />
+	<property name="testsrc" value="./testsrc" />
+	<property name="resources" value="./resources" />
+
+	<property name="classes" value="${dist}/classes" />
+	<property name="obfuspath" value="${dist}/obs_classes" />
+
+	<!--
+		Jar naming conventions:
+		
+		fat - contains libs as along with our code
+		thin - contains just our code
+		
+		obfus - contains obfuscated code
+		plain - no obfuscated code
+		
+		jars can be renamed before passing to customer
+	-->
+
+	<property name="jarbasename" value="${dist}/${ant.project.name}" />
+	<property name="fatjar" value="${jarbasename}.fat.jar" />
+	<property name="tempjar" value="${jarbasename}.temp.jar" />
+	<property name="fatobfusjar" value="${jarbasename}.fat.obfus" />
+	<property name="fatobfusjar_gui" value="${fatobfusjar}.gui.jar" />
+	<property name="fatobfusjar_cli" value="${fatobfusjar}.cli.jar" />
+	<property name="fatobfusjar_lib" value="${fatobfusjar}.lib.jar" />
+	<property name="fatobfusjar_applet" value="${fatobfusjar}.applet.jar" />
+	<property name="signedjar" value="${jarbasename}.fat.signed.jar" />
+	<property name="javakeystore" value="cb_keystore.bin" />
+	<property name="javadocjar" value="${jarbasename}.javadoc.jar" />
+
+	<property name="climainclass" value="monkeypuzzle.Cli" />
+	<property name="guimainclass" value="monkeypuzzle.ForensicGui" />
+	<property name="libentryclass" value="monkeypuzzle.central.BackupDirectoryParser" />
+	<property name="dumpmainclass" value="monkeypuzzle.TextDump" />
+	<property name="appletmainclass" value="monkeypuzzle.ui.swing.app.fileviewer.FileViewerApplet" />
+
+	<property name="javadoc" value="./javadoc/" />
+	<property name="lib" value="./lib" />
+	<property name="test" value="./test" />
+	<property name="instr" value="./instru" />
+	<property name="xml" value="./xml" />
+	<property name="testresults" value="./testresults" />
+	<property name="cover" value="./cover" />
+	<property name="manifest" value="./META-INF/MANIFEST.MF" />
+	<property name="proguarddir" value="./proguard" />
+	<taskdef resource="proguard/ant/task.properties" classpath="${proguarddir}/lib/proguard.jar" />
+
+	<property name="cobertura.dir" value="${lib}" />
+
+	<path id="cobertura.classpath">
+		<fileset dir="${cobertura.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+	<target name="help">
+		<echo>
+Targets:
+	clean     - remove all generated files
+	compile   - build the code
+	jar.obfus.gui - Produce an executable jar file (gui) containing libs and obfuscated code
+	jar.obfus.cmd - Produce an executable jar file (cmd) containing libs and obfuscated code
+	jar.obfus.lib - Produce a jar file (lib) containing libs and obfuscated code for integration into other tools
+	jar.obfus.applet - Create an obfuscated applet
+	jar.plain - Produce an executable jar file (gui) containing our code and libs suitable for debugging
+	update.website.code - Update website with new builds of software
+		</echo>
+	</target>
+
+	<target name="init">
+		<path id="classpath">
+			<fileset dir="${lib}" includes="**/**.jar" />
+		</path>
+		<mkdir dir="${dist}" />
+		<mkdir dir="${classes}" />
+		<mkdir dir="${obfuspath}" />
+		<mkdir dir="${instr}" />
+		<mkdir dir="${xml}" />
+		<mkdir dir="${testresults}" />
+		<mkdir dir="${javadoc}" />
+	</target>
+
+	<target name="update.website.code" depends="jar.signed">
+		<copy file="${signedjar}" todir="website/crypticbit.com/www/tools" />
+	</target>
+
+	<target name="compile.nodebug" depends="init">
+		<javac destdir="${classes}" debug="off" includes="**/*.java">
+			<src path="${src}" />
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="compile" depends="init">
+		<javac destdir="${classes}" debug="true" includes="**/*.java">
+			<src path="${src}" />
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="obfuscate.lib" depends="clean,compile">
+		<proguard configuration="./proguard/guiconf.pro">
+			-libraryjars "${java.home}/lib/rt.jar"
+			-injars      ${classes}
+			-outjars     ${obfuspath}
+			-dontusemixedcaseclassnames
+				-renamesourcefileattribute SourceFile
+				-keepattributes InnerClasses,SourceFile,LineNumberTable,Deprecated
+
+				-keep public class * {
+				    public protected *;
+				}
+
+				-keepclassmembernames class * {
+				    java.lang.Class class$(java.lang.String);
+				    java.lang.Class class$(java.lang.String, boolean);
+				}
+
+
+
+				-keepclassmembers class * implements java.io.Serializable {
+				    static final long serialVersionUID;
+				    private void writeObject(java.io.ObjectOutputStream);
+				    private void readObject(java.io.ObjectInputStream);
+				    java.lang.Object writeReplace();
+				    java.lang.Object readResolve();
+				}
+
+	      </proguard>
+	</target>
+
+	<target name="obfuscate" depends="clean,compile">
+		<proguard configuration="./proguard/guiconf.pro">
+		-libraryjars "${java.home}/lib/rt.jar"
+		-injars      ${classes}
+		-outjars     ${obfuspath}
+		-dontusemixedcaseclassnames
+      </proguard>
+	</target>
+
+	<target name="build.all.distributable" depends="jar.obfus.gui, jar.obfus.cli, jar.obfus.applet" />
+
+
+	<target name="jar.obfus.gui" depends="obfuscate">
+		<property name="outputjar" value="${fatobfusjar_gui}" />
+		<property name="distclasses" value="${obfuspath}" />
+		<property name="mainclass" value="${guimainclass}" />
+		<antcall target="jar.common" />
+	</target>
+
+	<target name="jar.obfus.lib" depends="obfuscate.lib">
+		<property name="outputjar" value="${fatobfusjar_lib}" />
+		<property name="distclasses" value="${obfuspath}" />
+		<property name="mainclass" value="${libentryclass}" />
+		<antcall target="jar.common" />
+	</target>
+
+	<target name="jar.obfus.cli" depends="obfuscate">
+		<property name="outputjar" value="${fatobfusjar_cli}" />
+		<property name="distclasses" value="${obfuspath}" />
+		<property name="mainclass" value="${climainclass}" />
+		<antcall target="jar.common" />
+	</target>
+
+	<target name="jar.obfus.applet" depends="obfuscate">
+		<property name="outputjar" value="${fatobfusjar_applet}" />
+		<property name="distclasses" value="${obfuspath}" />
+		<property name="mainclass" value="${appletmainclass}" />
+		<antcall target="jar.common" />
+	</target>
+
+
+	<target name="jar.depend" depends="compile">
+		<classdepandjar jarfile="${tempjar}" files="true" debug="true">
+			<classpath>
+				<fileset dir="${lib}/runtime">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement location="${distclasses}" />
+			</classpath>
+			<in name="monkeypuzzle" />
+			<topclass name="${mainclass}" />
+		</classdepandjar>
+	</target>
+
+	<target name="jar.plain" depends="compile">
+		<property name="outputjar" value="${fatjar}" />
+		<property name="distclasses" value="${classes}" />
+		<property name="mainclass" value="${guimainclass}" />
+		<antcall target="jar.common" />
+	</target>
+
+	<target name="jar.signed" depends="jar.obfus.applet">
+		<signjar signedjar="${signedjar}" alias="IphoneFileViewer" storepass="password" preservelastmodified="true" jar="${fatobfusjar_applet}" keystore="${javakeystore}">
+		</signjar>
+	</target>
+
+
+
+	<!-- do not use this target directly, use jar.obfus or jar.clean -->
+	<target name="jar.common" depends="jar.depend">
+		<jar destfile="${outputjar}">
+			<fileset dir="${resources}" />
+			<zipfileset src="${tempjar}" />
+			<zipgroupfileset dir="${lib}/runtime" includes="**/**.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="${mainclass}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="testcompile" depends="init,compile">
+		<javac destdir="${classes}" debug="true" includes="**/*.java">
+			<src path="${testsrc}" />
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="instrument" depends="compile,testcompile">
+		<mkdir dir="${instr}" />
+		<delete file="cobertura.ser" />
+		<cobertura-instrument todir="${instr}">
+			<fileset dir="${classes}">
+				<include name="**/*.class" />
+			</fileset>
+		</cobertura-instrument>
+	</target>
+
+	<target name="test2" depends="compile,testcompile">
+		<junit dir="." printsummary="on" fork="on" showoutput="off">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+			<classpath location="${classes}" />
+			<classpath refid="cobertura.classpath" />
+			<env key="LD_LIBRARY_PATH" path="${env.LD_LIBRARY_PATH}:${dist}" />
+			<formatter type="xml" />
+			<batchtest todir="${xml}">
+				<fileset dir="${instr}">
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<junitreport todir="${testresults}">
+			<fileset dir="${xml}">
+				<include name="*.xml" />
+			</fileset>
+			<report format="frames" todir="${testresults}" />
+		</junitreport>
+	</target>
+
+	<target name="test" depends="compile,testcompile,instrument">
+		<junit dir="." printsummary="on" fork="on" showoutput="off">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+			<classpath location="${instr}" />
+			<classpath refid="cobertura.classpath" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser" />
+			<env key="LD_LIBRARY_PATH" path="${env.LD_LIBRARY_PATH}:${dist}" />
+			<formatter type="xml" />
+			<batchtest todir="${xml}">
+				<fileset dir="${instr}">
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<junitreport todir="${testresults}">
+			<fileset dir="${xml}">
+				<include name="*.xml" />
+			</fileset>
+			<report format="frames" todir="${testresults}" />
+		</junitreport>
+	</target>
+
+	<target name="coverage" depends="test">
+		<mkdir dir="${cover}" />
+		<cobertura-report format="html" destdir="${cover}" srcdir="${src}" />
+	</target>
+
+	<target name="clean" depends="">
+		<delete dir="${classes}" />
+		<delete dir="${obfuspath}" />
+		<delete dir="${dist}" />
+		<delete dir="${javadoc}" />
+		<delete dir="${xml}" />
+		<delete dir="${testresults}" />
+		<delete dir="${instr}" />
+		<delete dir="${cover}" />
+		<delete file="cobertura.ser" />
+	</target>
+
+	<target name="javadoc" depends="init">
+		<javadoc packagenames="monkeypuzzle.*" private="false" destdir="${javadoc}" version="true" splitindex="true" noindex="false" maxmemory="256m" classpath="${classes}" excludepackagenames="monkeypuzzle.test.*" defaultexcludes="yes">
+			<sourcepath>
+				<pathelement path="src" />
+			</sourcepath>
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="javadocjar" depends="javadoc">
+		<jar destfile="${javadocjar}" basedir="${javadoc}" index="false" compress="false" />
+	</target>
+
+</project>
