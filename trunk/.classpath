@@ -10,15 +10,15 @@
 	<classpathentry kind="lib" path="lib/runtime/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jsch-0.1.40.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.9.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/metadata-extractor-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/nanoxml-jhotdraw.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/sqljet-browser.1.0.0.b616.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/sqljet.1.0.0.b616.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/ui/jhexed.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/ui/swingx-0.9.4.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/ui/swingx-beaninfo-0.9.4.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/saxon/saxon9.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/BSD/sqlitejdbc-v052.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/BSD/sqlitejdbc-v052.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/metadata-extractor-2.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/nanoxml-jhotdraw.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/sqljet-browser.1.0.0.b616.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/sqljet.1.0.0.b616.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/swingx-0.9.4.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jhexed.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/saxon9.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/swingx-beaninfo-0.9.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
