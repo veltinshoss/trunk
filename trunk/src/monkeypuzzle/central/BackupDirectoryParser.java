@@ -17,12 +17,10 @@ import monkeypuzzle.entity.status.Status;
 import monkeypuzzle.io.parser.plist.PListContainer;
 import monkeypuzzle.io.parser.plist.PListFactory;
 
-public class BackupDirectoryParser extends IPhoneParser
-{
+public class BackupDirectoryParser extends IPhoneParser {
 
 	private static PListContainer findContainerForFile(final File file)
-			throws IOException, FileParseException, FileNotFoundException
-	{
+			throws IOException, FileParseException, FileNotFoundException {
 		return PListFactory.createParser(new FileInputStream(file))
 				.getRootContainer();
 	}
@@ -33,24 +31,25 @@ public class BackupDirectoryParser extends IPhoneParser
 	private IPhone bd;
 
 	public static String getBackupSummary(File sourceDir)
-			throws FileParseException, IOException
-	{
+			throws FileParseException, IOException {
 		Info info = getConfiguration(sourceDir).getInfo();
-		return info.getProductType() + ": " + info.getDeviceName() + " v"
-				+ info.getProductVersion() + " - " + info.getLastBackupDate();
+		if (info == null)
+			return "unknown backup (" + sourceDir.getAbsolutePath() + ")";
+		else
+			return info.getProductType() + ": " + info.getDeviceName() + " v"
+					+ info.getProductVersion() + " - "
+					+ info.getLastBackupDate();
 	}
 
 	BackupDirectoryParser(final IPhoneFactory factory, final File sourceDir,
 			final ProgressIndicator progressIndicator)
-			throws IPhoneParseException, FileParseException, IOException
-	{
+			throws IPhoneParseException, FileParseException, IOException {
 		super(progressIndicator);
 		this.factory = factory;
 		this.sourceDir = sourceDir;
 		BackupConfigurationElements elements = getConfiguration(sourceDir);
 		this.bd = new IPhone(getGlobalVars(elements), elements);
-		try
-		{
+		try {
 			// get list of mdbackup files
 			File[] mdbackups = sourceDir
 					.listFiles(new MdbackupFilenameFilter());
@@ -65,59 +64,49 @@ public class BackupDirectoryParser extends IPhoneParser
 
 			parseEncodedFiles(mdbackups);
 			parseEncodedFiles(mddata);
-		} catch (BackupFileException bfe)
-		{
+		} catch (BackupFileException bfe) {
 			throw new IPhoneParseException("Unable to parse directory \""
 					+ sourceDir + "\"", bfe);
 		}
 
 	}
 
-	public File getDirectory()
-	{
+	public File getDirectory() {
 		return this.sourceDir;
 	}
 
 	@Override
-	public IPhone getIphoneConfiguration()
-	{
+	public IPhone getIphoneConfiguration() {
 		return this.bd;
 	}
 
 	private static BackupConfigurationElements getConfiguration(File sourceDir)
-			throws FileParseException, IOException
-	{
+			throws FileParseException, IOException {
 
 		Manifest manifest = null;
 		Info info = null;
 		Status status = null;
 
-		try
-		{
+		try {
 			info = findContainerForFile(new File(sourceDir, "Info.plist"))
 					.getAsInterface(Info.class);
 			// add all info fields to globalVars - ordered by method name
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			// fail silently
 			System.err.println("Info.plist was not found");
 		}
-		try
-		{
+		try {
 			manifest = findContainerForFile(
 					new File(sourceDir, "Manifest.plist")).getAsInterface(
 					Manifest.class);
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			// fail silently
 			System.err.println("Manifest.plist was not found");
 		}
-		try
-		{
+		try {
 			status = findContainerForFile(new File(sourceDir, "Status.plist"))
 					.getAsInterface(Status.class);
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			// fail silently
 			System.err.println("Status.plist was not found");
 		}
@@ -125,8 +114,7 @@ public class BackupDirectoryParser extends IPhoneParser
 	}
 
 	private Map<String, Object> getGlobalVars(
-			final BackupConfigurationElements elements)
-	{
+			final BackupConfigurationElements elements) {
 		this.globalVars = new HashMap<String, Object>();
 		this.globalVars.put("info.buildVersion", elements.getInfo()
 				.getBuildVersion());
@@ -161,8 +149,7 @@ public class BackupDirectoryParser extends IPhoneParser
 
 	{
 		int count = 0;
-		for (File f : files)
-		{
+		for (File f : files) {
 			BackupFile bfd = this.factory.createIPhoneFileFromEncoded(f);
 			this.bd.addBackupFile(bfd);
 			getProgressIndicator().progressUpdate(count++, files.length,
