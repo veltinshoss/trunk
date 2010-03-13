@@ -64,6 +64,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	private SearchResultsPane searchResultsPane;
 
 	private JTabbedPane viewPane;
+	private JSplitPane mainVerticalSplit;
 
 	public MainFrame()
 	{
@@ -121,7 +122,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		
 		JMenuItem openSshMenuItem = new JMenuItem();
 		fileMenu.add(openSshMenuItem);
-		openSshMenuItem.setText("Open over SSH");
+		openSshMenuItem.setText("Open over SSH (untested)");
 		openSshMenuItem.addActionListener(new OpenSshActionListener(this,
 				this.mediator));
 		
@@ -243,13 +244,14 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 			{
 				this.searchResultsPane = new SearchResultsPane(this.mediator);
 				this.searchResultsPane
-						.setPreferredSize(new Dimension(800, 200));
+						.setPreferredSize(new Dimension(800, 300));
 				this.mediator.addHighlightChangeListener(this);
-				JSplitPane mainVerticalSplit = new JSplitPane(
+				mainVerticalSplit = new JSplitPane(
 						JSplitPane.VERTICAL_SPLIT, true);
+
 				mainVerticalSplit
-						.add(this.searchResultsPane, JSplitPane.BOTTOM);
-				mainVerticalSplit.setResizeWeight(1.0f);
+				.add(new ProductMessage(), JSplitPane.BOTTOM);
+				mainVerticalSplit.setResizeWeight(0.9f);
 				mainVerticalSplit.setOneTouchExpandable(true);
 				getContentPane().add(mainVerticalSplit, BorderLayout.CENTER);
 				{
@@ -336,6 +338,8 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 									MainFrame.this.searchResultsPane
 											.updateSearchResults(searchDialog
 													.getResultsMap());
+									mainVerticalSplit
+									.add(MainFrame.this.searchResultsPane, JSplitPane.BOTTOM);
 								}
 							}
 						});
