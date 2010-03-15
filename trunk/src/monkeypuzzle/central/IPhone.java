@@ -318,7 +318,7 @@ public class IPhone
 		File deviceRootDir = monkeypuzzle.io.util.IoUtils
 				.createTempDir(".deviceRoot");
 		restoreDirectory(deviceRootDir);
-		return deviceRootDir;
+		return deviceRootDir; 
 	}
 
 	/**
