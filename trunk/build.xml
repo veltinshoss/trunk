@@ -82,13 +82,20 @@ Targets:
 		<copy file="${fatjar_applet_signed}" todir="website/crypticbit.com/www/tools" />
 	</target>
 
-	<target name="compile" depends="init">
+	<target name="compile" depends="init,bumpBuild">
 		<javac destdir="${classes}" debug="true" includes="**/*.java">
 			<src path="${src}" />
 			<classpath>
 				<path refid="classpath" />
 			</classpath>
 		</javac>
+	</target>
+
+	<target name="releaseBuild" depends="bumpBuild,jar.gui">
+	</target>
+
+	<target name="deploySourceforge" depends="releaseBuild">
+		<scp file="${fatjar_gui}" todir="${username}:${password},iphoneanalyzer@frs.sourceforge.net:uploads/" />
 	</target>
 
 	<target name="jar.gui" depends="compile">
@@ -111,13 +118,13 @@ Targets:
 
 
 	<target name="jar.depend">
-		<classdepandjar jarfile="${tempjar}" files="true" >
+		<classdepandjar jarfile="${tempjar}" files="true">
 			<classpath>
-				<fileset dir="${lib}/runtime/" includes="**/**.jar"/>
+				<fileset dir="${lib}/runtime/" includes="**/**.jar" />
 				<pathelement location="${classes}" />
 			</classpath>
 			<out name="sun" />
-<!--			<in name="monkeypuzzle" /> -->
+			<!--			<in name="monkeypuzzle" /> -->
 			<topclass name="${mainclass}" />
 		</classdepandjar>
 	</target>
@@ -235,5 +242,33 @@ Targets:
 	<target name="javadocjar" depends="javadoc">
 		<jar destfile="${javadocjar}" basedir="${javadoc}" index="false" compress="false" />
 	</target>
+
+	<!-- this target will automatically create an html file with
+	    an incremented build number and version number-->
+	<!-- see http://www.jguru.com/faq/view.jsp?EID=481664 for details -->
+	<target name="bumpBuild">
+		<propertyfile file="version.properties" comment="Build version info">
+			<entry key="minorVersionNum" default="0" />
+			<entry key="majorVersionNum" default="0" />
+			<entry key="buildDate" type="date" value="now" />
+			<entry key="buildNum" default="0" type="int" operation="+" value="1" />
+		</propertyfile>
+		<copy file="version.html" tofile="${resources}/version.html" overwrite="true" />
+		<replace file="${resources}/version.html" value="value not found in version.properties" propertyFile="version.properties">
+			<replacefilter token="@minorVersionNum@" property="minorVersionNum" />
+			<replacefilter token="@majorVersionNum@" property="majorVersionNum" />
+			<replacefilter token="@buildDate@" property="buildDate" />
+			<replacefilter token="@buildNum@" property="buildNum" />
+		</replace>
+	</target>
+
+	<target name="bumpReleaseBuild">
+		<propertyfile file="version.properties" comment="Build version info">
+			<entry key="buildDate" type="date" value="now" />
+			<entry key="minorVersionNum" default="0" type="int" operation="+" value="1" />
+			<entry key="buildNum" value="0" />
+		</propertyfile>
+	</target>
+
 
 </project>
