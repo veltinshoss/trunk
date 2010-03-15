@@ -48,9 +48,10 @@ public class Cli
 			}
 
 			@Override
-			protected void run(final String[] args)
+			protected void run(final String[] args) throws IOException, FileParseException, IPhoneParseException, NotLicencedException
 			{
-				// TODO - implement Cli
+				IPhone bd = getBackupDirectory(args[args.length - 2]);
+				bd.restoreDirectory(new File(args[args.length -1]));
 			}
 		},
 		FIND()
@@ -65,7 +66,7 @@ public class Cli
 			@Override
 			protected void run(final String[] args) throws Exception
 			{
-				// TODO - Implement Cli
+				System.out.println("This feature is not implemented yet");
 
 			}
 
@@ -205,8 +206,14 @@ public class Cli
 	 */
 	public static void main(final String[] args)
 	{
-		Commands command = args.length > 0 ? Commands.valueOf(args[0]
+		
+		Commands command;
+		try {command = args.length > 0 ? Commands.valueOf(args[0]
 				.toUpperCase()) : null;
+		} catch (IllegalArgumentException e) {
+			command = null;
+			System.err.println("\""+args[0]+"\" is not a valid command.");
+		}
 		if (command == null)
 		{
 			command = Commands.HELP;
