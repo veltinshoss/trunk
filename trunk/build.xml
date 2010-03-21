@@ -126,6 +126,7 @@ Targets:
 			<out name="sun" />
 			<!--			<in name="monkeypuzzle" /> -->
 			<topclass name="${mainclass}" />
+			<topclass name="${climainclass}" />
 		</classdepandjar>
 	</target>
 
