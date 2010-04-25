@@ -68,7 +68,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 
 	public MainFrame()
 	{
-		super("iPhone Analyzer");
+		super("iPhone Analyzer by CrypticBit.com");
 		initGUI();
 	}
 
@@ -249,8 +249,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 				mainVerticalSplit = new JSplitPane(
 						JSplitPane.VERTICAL_SPLIT, true);
 
-				mainVerticalSplit
-				.add(new ProductMessage(), JSplitPane.BOTTOM);
+				mainVerticalSplit.add(new ProductMessage(), JSplitPane.BOTTOM);
 				mainVerticalSplit.setResizeWeight(0.9f);
 				mainVerticalSplit.setOneTouchExpandable(true);
 				getContentPane().add(mainVerticalSplit, BorderLayout.CENTER);
