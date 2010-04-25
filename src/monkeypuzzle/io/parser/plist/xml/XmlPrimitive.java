@@ -67,7 +67,9 @@ class XmlPrimitive extends PListPrimitiveImpl implements PListPrimitive
 			@Override
 			Object parseElement(final IXMLElement elem)
 			{
-				return Integer.parseInt(elem.getContent());
+				//this needs to be a long rather than an int as the INT could be unsigned
+				// and java does not have unsigned ints.
+				return Long.parseLong(elem.getContent());
 			}
 		},
 
