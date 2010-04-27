@@ -62,7 +62,6 @@ Targets:
 	jar.cmd - Produce an executable jar file (cmd) containing libs and cated code
 	jar.lib - Produce a jar file (lib) containing libs and cated code for integration into other tools
 	jar.applet - Create an cated applet
-	update.website.code - Update website with new builds of software
 		</echo>
 	</target>
 
@@ -76,10 +75,6 @@ Targets:
 		<mkdir dir="${xml}" />
 		<mkdir dir="${testresults}" />
 		<mkdir dir="${javadoc}" />
-	</target>
-
-	<target name="update.website.code" depends="jar.signed">
-		<copy file="${fatjar_applet_signed}" todir="website/crypticbit.com/www/tools" />
 	</target>
 
 	<target name="compile" depends="init,bumpBuild">
