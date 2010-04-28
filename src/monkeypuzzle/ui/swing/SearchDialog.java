@@ -56,8 +56,6 @@ public class SearchDialog extends JDialog
 		this.searchTypeTabs = new JTabbedPane();
 		this.searchTypeTabs.add("Text", new TextSearchPanel());
 		this.searchTypeTabs.add("Location", new LocationSearchPanel());
-		this.searchTypeTabs.add("Time", new NotImplementedYetPanel());
-		this.searchTypeTabs.add("Geo", new NotImplementedYetPanel());
 
 		getContentPane().add(this.searchTypeTabs, BorderLayout.CENTER);
 
