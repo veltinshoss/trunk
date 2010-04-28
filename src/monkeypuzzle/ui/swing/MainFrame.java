@@ -133,11 +133,13 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 				this, this.mediator));
 		JMenu defaultMenu = new JMenu("Default iTunes location");
 		File defaultRoot = null;
+		System.out.println("OS: " + System.getProperty("os.name"));
+		
 		if (OS.isWindows())
 			defaultRoot = new File(
 					System.getProperty("user.home")
 							+ "\\Application Data\\Apple Computer\\MobileSync\\Backup\\");
-		if (OS.isWindowsVista())
+		if (OS.isWindowsVista() || System.getProperty("os.name").equals("Windows 7"))
 			defaultRoot = new File(
 					System.getProperty("user.home")
 							+ "\\AppData\\Roaming\\Apple Computer\\MobileSync\\Backup\\");
