@@ -375,29 +375,6 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 				// }
 				// }
 				{
-					JMenu prefsMenu = new JMenu();
-					mainMenuBar.add(prefsMenu);
-					prefsMenu.setText("Preferences");
-					{
-						JMenuItem clearCustomerIdItem = new JMenuItem();
-						prefsMenu.add(clearCustomerIdItem);
-						clearCustomerIdItem.setText("Restet Customer Id");
-						clearCustomerIdItem
-								.addActionListener(new ActionListener() {
-
-									@Override
-									public void actionPerformed(
-											final ActionEvent e)
-									{
-										MainFrame.this.mediator
-												.getPreferences()
-												.removeCustomerId();
-									}
-								});
-
-					}
-				}
-				{
 					JMenu helpMenu = new JMenu();
 					mainMenuBar.add(helpMenu);
 					helpMenu.setText("Help");
