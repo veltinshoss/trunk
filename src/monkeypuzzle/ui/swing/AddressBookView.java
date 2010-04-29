@@ -28,6 +28,7 @@ import javax.swing.table.TableRowSorter;
 import monkeypuzzle.central.IPhone;
 import monkeypuzzle.entity.sqlite.AddressBook;
 import monkeypuzzle.entity.sqlite.AddressBookImages;
+import monkeypuzzle.entity.sqlite.AddressBook.Person;
 import monkeypuzzle.entity.sqlite.AddressBookImages.AddressBookImage;
 
 @SuppressWarnings("serial")
@@ -65,9 +66,9 @@ public class AddressBookView extends JPanel implements SpecialView
 		setLayout(new GridLayout(1, 1));
 		this.table = new JTable() {
 			@Override
-			public Class<?> getColumnClass(final int row)
+			public Class<?> getColumnClass(final int column)
 			{
-				if (row == 7)
+				if (column == 7)
 					return AddressBookImages.class;
 				else
 					return String.class;
@@ -77,11 +78,16 @@ public class AddressBookView extends JPanel implements SpecialView
 				new ListSelectionListener() {
 
 					@Override
-					public void valueChanged(final ListSelectionEvent arg0)
+					public void valueChanged(final ListSelectionEvent selectionEvent)
 					{
-						AddressBookView.this.contactPane
-								.show(AddressBookView.this.people.get(arg0
-										.getFirstIndex()));
+						int viewRow =  AddressBookView.this.table.getSelectedRow();
+						if( viewRow >= 0 )
+						{
+							JTable table = AddressBookView.this.table;
+							int selectedPersonIndex = table.convertRowIndexToModel(viewRow);
+							Person person = AddressBookView.this.people.get(selectedPersonIndex);
+							AddressBookView.this.contactPane.show(person);
+						}
 
 					}
 				});
