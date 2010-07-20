@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import monkeypuzzle.central.BackupFileView;
+import monkeypuzzle.central.FileParseException;
 import monkeypuzzle.central.NavigateException;
 import monkeypuzzle.central.backupfile.BackupFile;
 
@@ -17,8 +18,9 @@ public interface ParsedData
 	 * Generate a verbose textual view of the parsed file
 	 * 
 	 * @return a verbose textual view of the parsed file
+	 * @throws FileParseException 
 	 */
-	public String getContents();
+	public String getContents() throws FileParseException;
 
 	/**
 	 * Generate a one line textual summary of the parsed file
@@ -39,10 +41,11 @@ public interface ParsedData
 	 *            string to search for
 	 * @return a set containing all the found locatins
 	 * @throws NavigateException
+	 * @throws FileParseException 
 	 * 
 	 */
 	public Set<Location> search(TextSearchAlgorithm searchType,
-			String searchString) throws NavigateException;
+			String searchString) throws NavigateException, FileParseException;
 
 	BackupFile getBackupFile();
 }

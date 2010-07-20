@@ -45,8 +45,9 @@ public enum SpecialViewType
 	{
 		// fixme - must do better
 		lookup.put(BackupFileView.ADDRESS_BOOK, SpecialViewType.ADDRESS_BOOK);
-		lookup.put(BackupFileView.ADDRESS_BOOK_IMAGES,
-				SpecialViewType.ADDRESS_BOOK);
+		
+		//TODO commented out as it was failing 
+		//lookup.put(BackupFileView.ADDRESS_BOOK_IMAGES, SpecialViewType.ADDRESS_BOOK);
 		lookup.put(BackupFileView.SMS, SpecialViewType.SMS);
 	}
 

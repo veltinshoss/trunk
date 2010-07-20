@@ -3,6 +3,7 @@
  */
 package monkeypuzzle.io.parser.sqlite;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ import monkeypuzzle.results.Location;
 import monkeypuzzle.results.Matcher;
 import monkeypuzzle.results.ParsedDataImpl;
 import monkeypuzzle.results.TextSearchAlgorithm;
+import monkeypuzzle.ui.swing.MainFrame;
 
 public class SqlResultsImpl extends ParsedDataImpl implements
 		monkeypuzzle.results.ParsedData, SqlResults
@@ -43,44 +45,32 @@ public class SqlResultsImpl extends ParsedDataImpl implements
 	{
 		try
 		{
-			return SqlDynamicProxy.loadRootData(interfaceDef,
-					this.sqlDataSource);
+			return SqlDynamicProxy.loadRootData(interfaceDef, this.sqlDataSource);
 		} catch (Exception e)
 		{
 			// FIXME error handling
-			throw new Error("Unable to load data into type \""
-					+ interfaceDef.getName() + "\"", e);
+			throw new Error("Unable to load data into type \"" + interfaceDef.getName() + "\"", e);
 		}
 	}
 
-	public String getContents()
+	public String getContents() throws FileParseException
 	{
 		StringBuffer buff = new StringBuffer();
 		for (Class<?> interfaceDef : getAvailableInterfaces())
 		{
-			buff.append(
-					"== "
-							+ monkeypuzzle.util.StringTools
-									.getClassNameNoPackage(interfaceDef)
-							+ " Entries ==").append(
-					monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
-			try
+			buff.append("== ");
+			buff.append(monkeypuzzle.util.StringTools.getClassNameNoPackage(interfaceDef));
+			buff.append(" Entries ==");
+			buff.append(monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
+
+			for (Object p : getRecords(interfaceDef))
 			{
-				for (Object p : getRecords(interfaceDef))
-				{
-					buff.append("= Entry =").append(
-							monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
-					buff.append(p.toString());
-					buff
-							.append(monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
-					buff
-							.append(monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
-				}
-			} catch (FileParseException e)
-			{
-				return "Error getting " + interfaceDef.getName() + " Entries: "
-						+ e.getMessage();
+				buff.append("= Entry =").append(monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
+				buff.append(p.toString());
+				buff.append(monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
+				buff.append(monkeypuzzle.io.util.Util.SYSTEM_LINE_SEPARATOR);
 			}
+
 		}
 		return buff.toString();
 	}
@@ -96,9 +86,10 @@ public class SqlResultsImpl extends ParsedDataImpl implements
 		try
 		{
 			return SqlDynamicProxy.loadData(interfaceDef, this.sqlDataSource);
+			
 		} catch (Exception e)
 		{
-			throw new FileParseException("Unable to load data into type +\""
+			throw new FileParseException("Failed to get Records for \""
 					+ interfaceDef.getName() + "\"", e);
 		}
 	}
@@ -162,6 +153,16 @@ public class SqlResultsImpl extends ParsedDataImpl implements
 	@Override
 	public String toString()
 	{
-		return getContents();
+		try {
+			return getContents();
+		} catch (FileParseException e) 
+		{
+			try {
+				MainFrame.writeErrorLog("Error calling SqlResultsImpl.toString()", e);
+			} catch (IOException e1) {
+				//do nothing
+			}
+			return e.getMessage();
+		}
 	}
 }

@@ -86,7 +86,7 @@ public class TextView extends View implements HighlightChangeListener
 	}
 
 	@Override
-	protected void init()
+	protected void init() throws FileParseException
 	{
 		getMediator().addHighlightChangeListener(this);
 		this.textPane.setText(getBackupFile().getParsedData().getContents());
