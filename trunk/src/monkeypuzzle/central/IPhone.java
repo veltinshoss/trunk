@@ -25,6 +25,7 @@ import monkeypuzzle.results.Location;
 import monkeypuzzle.results.LocationMatcher;
 import monkeypuzzle.results.ParsedData;
 import monkeypuzzle.results.TextSearchAlgorithm;
+import monkeypuzzle.ui.swing.MainFrame;
 
 /**
  * The main class for parsing iPhone backup files. Given a directory containing
@@ -133,15 +134,30 @@ public class IPhone
 		return result;
 	}
 
-	public List<BackupFile> getBackupFileByType(final BackupFileView bf)
+	/**
+	 * Find all files which are displayed in a given view
+	 * @param backupFileView
+	 * @return list of backup files for this view
+	 */
+	//TODO Verify these changes with Leo
+	public List<BackupFile> getBackupFileByType(final BackupFileView backupFileView)
 	{
+		//System.out.println("IPhone.getBackupFileByType 143: " + backupFileView);
 		List<BackupFile> result = new ArrayList<BackupFile>();
-		for (Entry<BackupFile, BackupFileType> e : this.backupFileInstanceToType
-				.entrySet())
+		
+		for (Entry<BackupFile, BackupFileType> e : this.backupFileInstanceToType.entrySet())
 		{
-			if (e.getKey().getParsedData().getViews() == bf)
+			BackupFile currentFile = e.getKey();
+			BackupFileType currentType = currentFile.getParserType(); //PLIST, MEDIA, SQL etc
+			
+			//System.out.println("CurrentFile: " + currentFile.getOriginalFileName() + ", currentType: " + currentType);
+			BackupFileView testView = BackupFileView.find(currentFile.getCompleteOriginalFileName()); 
+			//System.out.println("targetView:" + backupFileView + ", testView:" + testView);
+			if(testView == backupFileView)
+			//if (currentFile.getParsedData().getViews() == backupFileView)
+			// calling currentFile.getParsedData() in this loop meant reading in every file on the device which killed performance. 
 			{
-				result.add(e.getKey());
+				result.add(currentFile);
 			}
 		}
 		return result;
@@ -352,7 +368,15 @@ public class IPhone
 		Set<Location> result = new HashSet<Location>();
 		for (BackupFile bf : this.backupFiles)
 		{
-			result.addAll(bf.getParsedData().search(searchType, searchString));
+			try {
+				result.addAll(bf.getParsedData().search(searchType, searchString));
+			} catch (FileParseException e) {
+				try {
+					MainFrame.writeErrorLog(e.getMessage(), e.getCause());
+				} catch (IOException e1) {
+					//do nothing
+				}
+			}
 		}
 		return result;
 	}
@@ -375,8 +399,7 @@ public class IPhone
 	void addBackupFile(final BackupFile backupFile)
 	{
 		this.backupFiles.add(backupFile);
-		this.backupFileInstanceToType.put(backupFile, backupFile
-				.getParserType());
+		this.backupFileInstanceToType.put(backupFile, backupFile.getParserType());
 	}
 
 	private ParsedData getParsedDataForType(final BackupFileView bf)

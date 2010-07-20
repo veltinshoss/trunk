@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import monkeypuzzle.central.BackupFileView;
+import monkeypuzzle.central.FileParseException;
 import monkeypuzzle.central.NavigateException;
 
 public abstract class ParsedDataImpl implements ParsedData
@@ -36,11 +37,11 @@ public abstract class ParsedDataImpl implements ParsedData
 
 	@Override
 	public Set<Location> search(final TextSearchAlgorithm searchType,
-			final String searchString) throws NavigateException
+			final String searchString) throws NavigateException, FileParseException
 	{
 		Set<Location> result = new HashSet<Location>();
-		for (Map.Entry<Integer, String> entry : searchType.search(searchString,
-				getContents()).entrySet())
+		
+		for (Map.Entry<Integer, String> entry : searchType.search(searchString,	getContents()).entrySet())
 		{
 			result.add(new TextLocation(this, getBackupFile(),
 					entry.getValue(), entry.getKey()));

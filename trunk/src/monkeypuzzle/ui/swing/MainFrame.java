@@ -7,7 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.logging.Level;
 
 import javax.swing.JFileChooser;
@@ -81,12 +83,45 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	@Override
 	public void displayErrorDialog(final String message, final Throwable cause)
 	{
+		String logFileMessage = "An unexpected problem has occurred and been logged.\nPlease email the following file to support@crypticbit.com to allow the issue to be identified and fixed:\n " ;
+		try {
+			logFileMessage  += writeErrorLog(message, cause);
+		} catch (IOException e) {
+			logFileMessage = message;
+		}
+		
 		org.jdesktop.swingx.JXErrorPane.showDialog(getContentPane(),
-				new ErrorInfo("Error", message, cause.getLocalizedMessage(),
+				new ErrorInfo("Error", logFileMessage, cause.getLocalizedMessage(),
 						"ERROR", cause, Level.ALL, null));
 		// cause.printStackTrace();
 	}
 
+	/**
+	 * Creates a temp file with a log of an Error
+	 * @param message - error message
+	 * @param cause - cause of the error
+	 * @return path of the log file
+	 * @throws IOException if writing the log file fails
+	 */
+	public static String writeErrorLog(final String message, final Throwable cause) throws IOException
+	{
+		File f = File.createTempFile("iPhoneAnalzyerErrorLog.", ".log");
+
+		PrintStream printStream = new PrintStream(f);
+
+		printStream.print("Date: ");
+		printStream.print(new Date());
+		printStream.print("\r\nOS: ");
+		printStream.print(System.getProperty("os.name"));
+		printStream.print("\r\nMessage: ");
+		printStream.print(message);
+		printStream.print("\r\n\r\nCause:\r\n");
+		cause.printStackTrace(printStream);
+
+		printStream.close();
+		return f.getAbsolutePath();
+	}
+	
 	@Override
 	public void highlight(final Collection<Location> locations)
 	{
