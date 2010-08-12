@@ -17,8 +17,8 @@
 	<classpathentry kind="lib" path="lib/runtime/forceinclude/sqljet.1.0.0.b616.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/forceinclude/swingx-0.9.4.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jhexed.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/saxon9.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/swingx-beaninfo-0.9.4.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/forceinclude/saxon9.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -30,7 +30,6 @@ import monkeypuzzle.results.LocationMatcher;
 import monkeypuzzle.util.Base64;
 import net.n3.nanoxml.XMLException;
 import net.sf.saxon.FeatureKeys;
-import net.sf.saxon.om.Validation;
 
 @SuppressWarnings("serial")
 public class ReportView extends JPanel
@@ -101,7 +100,7 @@ public class ReportView extends JPanel
 							.newInstance();
 					transformerFactory.setAttribute(
 							FeatureKeys.SCHEMA_VALIDATION, new Integer(
-									Validation.SKIP));
+									net.sf.saxon.om.Validation.SKIP));
 					Templates x = transformerFactory
 							.newTemplates(new StreamSource(xsltReader));
 					// get transformer
