@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,21 +33,17 @@ import monkeypuzzle.entity.sqlite.AddressBook.Person;
 import monkeypuzzle.entity.sqlite.AddressBookImages.AddressBookImage;
 
 @SuppressWarnings("serial")
-public class AddressBookView extends JPanel implements SpecialView
-{
-	private class ContactPane extends JPanel
-	{
+public class AddressBookView extends JPanel implements SpecialView {
+	private class ContactPane extends JPanel {
 		private JTextArea text = new JTextArea();
 		private JScrollPane scroll = new JScrollPane(this.text);
 
-		ContactPane()
-		{
+		ContactPane() {
 			setLayout(new GridLayout(1, 1));
 			this.add(this.scroll);
 		}
 
-		public void show(final AddressBook.Person person)
-		{
+		public void show(final AddressBook.Person person) {
 			this.text.setText(person.toString());
 		}
 
@@ -61,13 +58,11 @@ public class AddressBookView extends JPanel implements SpecialView
 
 	private JTable table;
 
-	AddressBookView(final Mediator mediator)
-	{
+	AddressBookView(final Mediator mediator) {
 		setLayout(new GridLayout(1, 1));
 		this.table = new JTable() {
 			@Override
-			public Class<?> getColumnClass(final int column)
-			{
+			public Class<?> getColumnClass(final int column) {
 				if (column == 7)
 					return AddressBookImages.class;
 				else
@@ -78,14 +73,16 @@ public class AddressBookView extends JPanel implements SpecialView
 				new ListSelectionListener() {
 
 					@Override
-					public void valueChanged(final ListSelectionEvent selectionEvent)
-					{
-						int viewRow =  AddressBookView.this.table.getSelectedRow();
-						if( viewRow >= 0 )
-						{
+					public void valueChanged(
+							final ListSelectionEvent selectionEvent) {
+						int viewRow = AddressBookView.this.table
+								.getSelectedRow();
+						if (viewRow >= 0) {
 							JTable table = AddressBookView.this.table;
-							int selectedPersonIndex = table.convertRowIndexToModel(viewRow);
-							Person person = AddressBookView.this.people.get(selectedPersonIndex);
+							int selectedPersonIndex = table
+									.convertRowIndexToModel(viewRow);
+							Person person = AddressBookView.this.people
+									.get(selectedPersonIndex);
 							AddressBookView.this.contactPane.show(person);
 						}
 
@@ -106,10 +103,8 @@ public class AddressBookView extends JPanel implements SpecialView
 					public Component getTableCellRendererComponent(
 							final JTable table, final Object value,
 							final boolean isSelected, final boolean hasFocus,
-							final int row, final int column)
-					{
-						if (value != null)
-						{
+							final int row, final int column) {
+						if (value != null) {
 							ImageIcon imageIcon = new ImageIcon(
 									((AddressBookImage) value).getImageData());
 							setIcon(new ImageIcon(
@@ -121,8 +116,7 @@ public class AddressBookView extends JPanel implements SpecialView
 															.getIconWidth()),
 													ROW_HEIGHT,
 													Image.SCALE_FAST)));
-						} else
-						{
+						} else {
 							setIcon(null);
 						}
 						return this;
@@ -132,41 +126,35 @@ public class AddressBookView extends JPanel implements SpecialView
 	}
 
 	@Override
-	public JComponent getComponent()
-	{
+	public JComponent getComponent() {
 		return this;
 	}
 
-	private void init(final IPhone backupDirectory)
-	{
+	private void init(final IPhone backupDirectory) {
 
 		this.people = backupDirectory.getAddressBook();
 		List<AddressBookImage> images = backupDirectory.getAddressBookImages();
+		if (images == null)
+			images = Collections.emptyList();
 
 		Map<Integer, AddressBookImage> imageLookup = new HashMap<Integer, AddressBookImage>();
-		for (AddressBookImage image : images)
-		{
+		for (AddressBookImage image : images) {
 			imageLookup.put(image.getRecordId(), image);
 		}
 
 		List<Object[]> results = new ArrayList<Object[]>();
-		for (AddressBook.Person person : this.people)
-		{
+		for (AddressBook.Person person : this.people) {
 			results.add(new Object[] { person.getFirstName(),
-					person.getLastName(), person.getJobTitle(),
-					person.getDepartment(), person.getOrganization(),
-					person.getBirthday(), person.getNote(),
-					imageLookup.get(person.getRowId()),
-					person.getCreationDate() });
+					person.getLastName(), person.getOrganization(),
+
+					imageLookup.get(person.getRowId()), });
 
 		}
 		this.table.setModel(new DefaultTableModel(results
 				.toArray(new Object[results.size()][]), new String[] { "First",
-				"Last", "Title", "Department", "Organisation", "Birthday",
-				"Note", "Photo", "Created" }) {
+				"Last", "Organisation", "Photo" }) {
 			@Override
-			public boolean isCellEditable(final int row, final int column)
-			{
+			public boolean isCellEditable(final int row, final int column) {
 				return false;
 			}
 		});

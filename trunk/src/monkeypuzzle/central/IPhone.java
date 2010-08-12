@@ -116,7 +116,8 @@ public class IPhone
 
 	public AddressBookImages getAddressBookImages()
 	{
-		return getParsedDataForType(BackupFileView.ADDRESS_BOOK_IMAGES)
+		ParsedData parsedDataForType = getParsedDataForType(BackupFileView.ADDRESS_BOOK_IMAGES);
+		return parsedDataForType == null ? null : parsedDataForType
 				.getContentbyInterface(AddressBookImages.class);
 	}
 
