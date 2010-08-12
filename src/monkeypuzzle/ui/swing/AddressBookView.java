@@ -1,6 +1,7 @@
 package monkeypuzzle.ui.swing;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -10,8 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -30,23 +34,47 @@ import monkeypuzzle.central.IPhone;
 import monkeypuzzle.entity.sqlite.AddressBook;
 import monkeypuzzle.entity.sqlite.AddressBookImages;
 import monkeypuzzle.entity.sqlite.AddressBook.Person;
+import monkeypuzzle.entity.sqlite.AddressBook.Person.ContactItem;
 import monkeypuzzle.entity.sqlite.AddressBookImages.AddressBookImage;
 
 @SuppressWarnings("serial")
 public class AddressBookView extends JPanel implements SpecialView {
 	private class ContactPane extends JPanel {
-		private JTextArea text = new JTextArea();
-		private JScrollPane scroll = new JScrollPane(this.text);
+		// private JTextArea text = new JTextArea();
+		private JPanel panel = new JPanel();
+		private JScrollPane scroll = new JScrollPane(panel);
 
 		ContactPane() {
 			setLayout(new GridLayout(1, 1));
 			this.add(this.scroll);
+			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		}
 
 		public void show(final AddressBook.Person person) {
-			this.text.setText(person.toString());
+			panel.removeAll();
+			JTextArea ta = new JTextArea(((person.getFirstName() == null) ? ""
+					: (person.getFirstName() + " "))
+					+ person.getLastName() == null ? "" : person.getLastName());
+			ta.setFont(new Font("Arial", Font.BOLD, 18));
+			panel.add(ta);
+			panel.add(Box.createVerticalStrut(20));
+			AddressBookImage addressBookImage = (AddressBookImage) imageLookup
+					.get(person.getRowId());
+			if (addressBookImage != null)
+				panel.add(new JLabel(new ImageIcon(addressBookImage
+						.getImageData())));
+			for (ContactItem ci : person.getContactDetails())
+				panel.add(new JTextArea(ci.getLabel() + " "
+						+ ci.getContactType() + ": " + ci.getValue()));
+			panel.add(Box.createVerticalGlue());
+			panel.add(Box.createVerticalStrut(20));
+			panel.add(Box.createVerticalGlue());
+			panel.add(new JTextArea(person.toString()));
+			panel.add(Box.createVerticalGlue());
+			this.invalidate();
+			this.revalidate();
+			this.repaint();
 		}
-
 	}
 
 	private static final int ROW_HEIGHT = 60;
@@ -58,12 +86,14 @@ public class AddressBookView extends JPanel implements SpecialView {
 
 	private JTable table;
 
+	private Map<Integer, AddressBookImage> imageLookup;
+
 	AddressBookView(final Mediator mediator) {
 		setLayout(new GridLayout(1, 1));
 		this.table = new JTable() {
 			@Override
 			public Class<?> getColumnClass(final int column) {
-				if (column == 7)
+				if (column == 3)
 					return AddressBookImages.class;
 				else
 					return String.class;
@@ -137,7 +167,7 @@ public class AddressBookView extends JPanel implements SpecialView {
 		if (images == null)
 			images = Collections.emptyList();
 
-		Map<Integer, AddressBookImage> imageLookup = new HashMap<Integer, AddressBookImage>();
+		imageLookup = new HashMap<Integer, AddressBookImage>();
 		for (AddressBookImage image : images) {
 			imageLookup.put(image.getRecordId(), image);
 		}
@@ -146,8 +176,7 @@ public class AddressBookView extends JPanel implements SpecialView {
 		for (AddressBook.Person person : this.people) {
 			results.add(new Object[] { person.getFirstName(),
 					person.getLastName(), person.getOrganization(),
-
-					imageLookup.get(person.getRowId()), });
+					imageLookup.get(person.getRowId()) });
 
 		}
 		this.table.setModel(new DefaultTableModel(results
