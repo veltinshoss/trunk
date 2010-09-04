@@ -45,13 +45,9 @@ public final class FilesViewingPane extends JTabbedPane implements
 		removeAll();
 		cleanUp();
 		this.add("Device Info", new InfoView(this.mediator));
-		reportIndex = -1;
 		this.mediator.addRequestTabChangeListener(this);
 	}
 
-	public void showReport() {
-		this.add("Report", new ReportView(this.mediator));
-	}
 
 	@Override
 	public void fileChanged(final BackupFile bfd,
@@ -126,19 +122,11 @@ public final class FilesViewingPane extends JTabbedPane implements
 	public void requestTabChanged(final Tabs tab) {
 		if (tab == Tabs.INFO) {
 			setSelectedIndex(0);
-		} else if (tab == Tabs.REPORT) {
-			if (reportIndex == -1) {
-				this.insertTab("Report", null, new ReportView(mediator), null,
-						1);
-				reportIndex = 1;
-			}
-			setSelectedIndex(reportIndex);
+		
 		} else
 			throw new UnsupportedOperationException("Type not yet supported: "
 					+ tab);
 	}
-
-	private int reportIndex = -1;
 
 	private void cleanUp() {
 		for (ViewingPane pane : this.fileTabs.values()) {

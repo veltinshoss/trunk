@@ -48,6 +48,10 @@ public interface AddressBook extends List<AddressBook.Person>
 			{
 				return id;
 			}
+			
+			public String toString() {
+				return this.name().replace("_", " ").toLowerCase();
+			}
 		}
 
 		public static ContactLabel convert(final Integer value)
@@ -70,6 +74,10 @@ public interface AddressBook extends List<AddressBook.Person>
 			return id;
 		}
 
+		public String toString() {
+			return this.name().replace("_", " ").toLowerCase();
+		}
+		
 	}
 
 	@SqlTable(tableName = "ABPERSON")
