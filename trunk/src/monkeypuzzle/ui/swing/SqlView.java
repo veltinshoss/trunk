@@ -1,6 +1,8 @@
 package monkeypuzzle.ui.swing;
 
 import java.awt.GridLayout;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,13 +69,15 @@ public class SqlView extends View implements HighlightChangeListener {
 	protected void init() {
 		BrowserComponentManager manager = BrowserComponentManager
 				.create(new JFrame());
-		this.add(manager.getComponent());
+		SqlView.this.add(manager.getComponent());
+		SqlView.this.revalidate();
 		try {
 			manager.open(bfd.getContentsFile());
 		} catch (IOException e) {
 			getMediator().displayErrorDialog(
 					"Unable to access database file: "
 							+ bfd.getOriginalFileName(), e);
+
 		}
 	}
 

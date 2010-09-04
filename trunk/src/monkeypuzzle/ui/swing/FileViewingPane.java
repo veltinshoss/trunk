@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -22,14 +24,34 @@ import monkeypuzzle.ui.swing.plist.PListView;
 class FileViewingPane extends ViewingPane implements
 HighlightChangeListener
 {
-	BackupFile backupFile;
-	private Map<ContentType, View> views;
+	private final class InitRunnable implements Runnable {
+		private View view;
+		public InitRunnable(View view) {
+			this.view = view;
+		}
 
+		@Override
+		public void run() {
+			try {
+				view.init();
+				view.revalidate();
+			} catch (Exception e) {
+				mediator.displayErrorDialog("Can not create view "+view.getSupportedContentView().toString(), e);
+			}
+		}
+	}
+
+	private BackupFile backupFile;
+	private Map<ContentType, View> views;
+	private Executor executor = Executors.newFixedThreadPool (1);
+	private Mediator mediator;
+	
 	FileViewingPane(final BackupFile bfd, final Mediator mediator)
 			throws IOException, FileParseException
 	{
 		super();
 		this.backupFile = bfd;
+		this.mediator = mediator;
 
 		// check for presence of data file (may be missing in corrupted
 		// backups)
@@ -57,7 +79,7 @@ HighlightChangeListener
 			{
 				if (view.getValue().shouldBeVisible())
 				{
-					view.getValue().init();
+					executor.execute (new InitRunnable(view.getValue()));
 					this.add(view.getKey().toString(), view.getValue());
 				}
 			}

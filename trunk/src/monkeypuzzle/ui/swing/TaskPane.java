@@ -20,13 +20,11 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 
 @SuppressWarnings("serial")
 public class TaskPane extends JXPanel implements
-		SelectedBackupDirectoryChangeListener
-{
+		SelectedBackupDirectoryChangeListener {
 	private boolean alreadyInit = false;
 	private final Mediator mediator;
 
-	TaskPane(final Mediator mediator)
-	{
+	TaskPane(final Mediator mediator) {
 		this.mediator = mediator;
 		setLayout(new BorderLayout());
 		mediator.addSelectedBackupDirectoryChangeListener(this);
@@ -34,32 +32,25 @@ public class TaskPane extends JXPanel implements
 
 	@Override
 	public void backupDirectoryChanged(final File directory,
-			final IPhone backupDirectory)
-	{
-		if (!this.alreadyInit)
-		{
+			final IPhone backupDirectory) {
+		if (!this.alreadyInit) {
 			init();
 			this.alreadyInit = true;
 		}
 	}
 
 	Action makeAction(final String title, final String iconPath,
-			final SpecialViewType svt)
-	{
+			final SpecialViewType svt) {
 		return makeAction(title, iconPath, svt, Callback.doNothing());
 	}
 
 	Action makeAction(final String title, final String iconPath,
-			final SpecialViewType svt, final Callback callback)
-	{
+			final SpecialViewType svt, final Callback callback) {
 		Action action = new AbstractAction(title) {
-			public void actionPerformed(final ActionEvent e)
-			{
-				for (BackupFileView type : svt.getBackupFileType())
-				{
+			public void actionPerformed(final ActionEvent e) {
+				for (BackupFileView type : svt.getBackupFileType()) {
 					for (BackupFile bfd : TaskPane.this.mediator
-							.getBackupDirectory().getBackupFileByType(type))
-					{
+							.getBackupDirectory().getBackupFileByType(type)) {
 						TaskPane.this.mediator.fireSelectedFileChangeListeners(
 								bfd, true, callback);
 					}
@@ -71,25 +62,8 @@ public class TaskPane extends JXPanel implements
 		return action;
 	}
 
-	private void init()
-	{
+	private void init() {
 		JXTaskPaneContainer taskPane = new JXTaskPaneContainer();
-
-		// Reports
-		JXTaskPane reportGroup = new JXTaskPane();
-		reportGroup.setTitle(("Reports"));
-		// systemGroup.setIcon(new ImageIcon(JXTaskPaneDemoPanel.class
-		// .getResource("resources/tasks-email.png")));
-		reportGroup.add(new AbstractAction("Default report") {
-			public void actionPerformed(final ActionEvent e)
-			{
-				TaskPane.this.mediator
-						.fireRequestToChangeTab(Mediator.Tabs.REPORT);
-
-			}
-		});
-
-		taskPane.add(reportGroup);
 
 		// Contacts
 		JXTaskPane contactGroup = new JXTaskPane();
@@ -100,7 +74,6 @@ public class TaskPane extends JXPanel implements
 				"resources/tasks-email.png", SpecialViewType.ADDRESS_BOOK));
 
 		taskPane.add(contactGroup);
-		
 
 		// Messages
 		JXTaskPane messageGroup = new JXTaskPane();
@@ -108,17 +81,14 @@ public class TaskPane extends JXPanel implements
 		messageGroup.add(makeAction("All", "resources/tasks-writedoc.png",
 				SpecialViewType.SMS, new Callback() {
 					@Override
-					void callback(final ViewingPane viewingPane)
-					{
-						((SmsView) viewingPane.getComponentAt(0))
-								.clearFilter();
+					void callback(final ViewingPane viewingPane) {
+						((SmsView) viewingPane.getComponentAt(0)).clearFilter();
 					}
 				}));
 		messageGroup.add(makeAction("Sent", "resources/tasks-writedoc.png",
 				SpecialViewType.SMS, new Callback() {
 					@Override
-					void callback(final ViewingPane viewingPane)
-					{
+					void callback(final ViewingPane viewingPane) {
 						((SmsView) viewingPane.getComponentAt(0))
 								.setFilter(MessageType.SENT);
 					}
@@ -126,28 +96,27 @@ public class TaskPane extends JXPanel implements
 		messageGroup.add(makeAction("Received", "resources/tasks-writedoc.png",
 				SpecialViewType.SMS, new Callback() {
 					@Override
-					void callback(final ViewingPane viewingPane)
-					{
+					void callback(final ViewingPane viewingPane) {
 						((SmsView) viewingPane.getComponentAt(0))
 								.setFilter(MessageType.RECEIVED);
 					}
 				}));
 
 		taskPane.add(messageGroup);
-		
+
 		// Shortcut
 		JXTaskPane shortcutGroup = new JXTaskPane();
 		shortcutGroup.setTitle(("Shortcuts"));
 		// systemGroup.setIcon(new ImageIcon(JXTaskPaneDemoPanel.class
 		// .getResource("resources/tasks-email.png")));
-		shortcutGroup.add(new AbstractAction("Photos"){
+		shortcutGroup.add(new AbstractAction("Photos") {
 
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				mediator.showDirectory(null);
-				
-			}});
+
+			}
+		});
 
 		taskPane.add(shortcutGroup);
 
