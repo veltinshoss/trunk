@@ -1,0 +1,29 @@
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\Leo\workspace\iphoneanalyzer_pro\target\iphoneanalyzer-0.0.1-SNAPSHOT.jar</jar>
+  <outfile>C:\Users\Leo\workspace\iphoneanalyzer_pro\target\iphoneanalyzer.exe</outfile>
+  <errTitle>Sorry. IPhone Analzyer hasn&apos;t been able to start</errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://www.crypticbit.com</supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon></icon>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <maxHeapSize>512</maxHeapSize>
+  </jre>
+  <splash>
+    <file>C:\Users\Leo\workspace\iphoneanalyzer_pro\resources\spash.bmp</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>60</timeout>
+    <timeoutErr>true</timeoutErr>
+  </splash>
+</launch4jConfig>
