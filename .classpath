@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/runtime/antlr-runtime-3.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/asm-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/asm-tree-2.2.1.jar"/>
@@ -19,6 +18,5 @@
 	<classpathentry kind="lib" path="lib/runtime/jhexed.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/swingx-beaninfo-0.9.4.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/forceinclude/saxon9.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
