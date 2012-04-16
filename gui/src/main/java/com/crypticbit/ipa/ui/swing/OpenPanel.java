@@ -3,18 +3,17 @@ package com.crypticbit.ipa.ui.swing;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Frame;
+import java.awt.Desktop;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -133,74 +132,31 @@ public class OpenPanel extends JXPanel {
 
 		// License Pane (along bottom)
 		final TransparentJEditorPane bannerPane = new TransparentJEditorPane(
-				"<p align=\"right\"><font size=\"12\">This copy is not licensed for commercial or governement use.</font><br><font size=\"8\">If you have paid for a license, please <a href=''>register</a> this copy.</font></p>");
+				"<p align=\"right\"><font size=\"12\">This product is available for free, but please consider <a href=''>donating</a>.</font></p>");
 
-		String prefsUser = prefs.getRegisteredUser();
-		String prefsKey = prefs.getRegisteredKey();
 
-		if (this.isLicensed(prefsUser, prefsKey)) {
-			bannerPane.setText(getRegisteredText(prefsUser));
-		} else {
-			bannerPane.addHyperlinkListener(new HyperlinkListener() {
 
-				@Override
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-						Frame frame = (JFrame) mediator.getMainFrame();
-						RegDialog regDialog = new RegDialog(frame);
-						regDialog.setVisible(true);
+		bannerPane.addHyperlinkListener(new HyperlinkListener() {
 
-						if (regDialog.isOkayed()) {
-							String user = regDialog.getUsername();
-							String key = regDialog.getKey();
-
-							if (isLicensed(user, key)) {
-								// pass
-								prefs.setRegisteredUser(user);
-								prefs.setRegisteredKey(key);
-								bannerPane.setText(getRegisteredText(user));
-								JOptionPane.showMessageDialog(frame,
-										"Registration successful");
-							} else {
-								JOptionPane
-										.showMessageDialog(
-												frame,
-												"Sorry, registration was not successful: Unrecognised email address or key.",
-												"Registration Unsuccessful",
-												JOptionPane.WARNING_MESSAGE);
-							}
-						}
-
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					try {
+						Desktop.getDesktop()
+								.browse(new URI(
+										"https://sourceforge.net/project/project_donations.php?group_id=296588"));
+					} catch (Exception e1) {
+						// do nothing
 					}
-
 				}
-			});
-		}
+
+			}
+		});
 
 		bannerPane.setEditable(false);
 		bannerPane.setBackground(Color.BLUE);
 		this.add(bannerPane, BorderLayout.SOUTH);
 
-	}
-
-	private String getRegisteredText(String user) {
-		return "Registered for commercial and/or government use by " + user;
-	}
-
-	private boolean isLicensed(final String user, final String key) {
-		if (user == null || key == null) {
-			return false;
-		}
-
-		String magic = "kjuy" + "htrg" + "ewq32" + "4567" + "uyth" + "gfds"
-				+ "reaw" + "4356" + "ytuf" + user.toLowerCase();
-		String emailSha = "";
-		try {
-			emailSha = WebValidator.convertToSha1(magic);
-		} catch (Exception e) {
-			return false;
-		}
-		return emailSha.equals(key);
 	}
 
 	private String createOpenEntry(final File file) {
