@@ -6,14 +6,29 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.logging.Level;
 
+import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -22,41 +37,28 @@ import org.jdesktop.swingx.painter.AbstractLayoutPainter.HorizontalAlignment;
 import org.jdesktop.swingx.painter.AbstractLayoutPainter.VerticalAlignment;
 import org.jdesktop.swingx.painter.ImagePainter;
 
-import com.crypticbit.ipa.central.BackupDirectoryParser;
 import com.crypticbit.ipa.central.LogFactory;
 import com.crypticbit.ipa.central.backupfile.BackupFile;
 import com.crypticbit.ipa.central.backupfile.BackupScanner;
-import com.crypticbit.ipa.licence.WebValidator;
-import com.crypticbit.ipa.ui.swing.eventhandler.OpenBackupActionListener;
-import com.crypticbit.ipa.ui.swing.prefs.Preferences;
 
-public class OpenPanel extends JXPanel {
+public class OpenPanel extends JXPanel implements ActionListener {
 
-	public class TransparentJEditorPane extends JEditorPane {
+	private BackupScanner backupScanner = new BackupScanner();
+	// the place to start scanning directories
+	private File defaultRoot = BackupScanner.getDefaultRoot();
+	// the backup to open - null before initial selection
+	private File backup;
+	private JPanel filePanel = new JPanel();
+	private JScrollPane sp;
+	private JTextField location = new JTextField();
+	private JFrame frame;
 
-		public TransparentJEditorPane(String text) {
-			super("text/html", text);
-		}
+	private ButtonGroup group = new ButtonGroup();
+	private JButton go;
 
-		public void paint(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-					0.5f));
-			super.paint(g2);
-			g2.dispose();
-		}
-
-	}
-
-	private Mediator mediator;
-	private final MainFrame mainFrame;
-
-	public OpenPanel(final Mediator mediator, final MainFrame mainFrame) {
-		this.mediator = mediator;
-		this.mainFrame = mainFrame;
-		this.setLayout(new BorderLayout());
-		// this.setSize(600, 600);
-		StringBuffer text = new StringBuffer();
+	OpenPanel(Mediator mediator, final JFrame frame) {
+		super(new BorderLayout());
+		this.frame = frame;
 
 		ImagePainter image;
 		try {
@@ -74,68 +76,57 @@ public class OpenPanel extends JXPanel {
 					"Unable to open background image", e);
 		}
 
-		text.append("<h1>Welcome to iPhone Analyzer</h1>");
-		text.append("<p><font size=\"5\">To begin, select an iOS device backup to open.</font></p>");
-		text.append("<p><font size=\"5\">You can select from either:</font></p>");
-		text.append("<ol><li>The default iTunes backup location:<ol>");
-		File defaultRoot = BackupScanner.getDefaultRoot();
-		if (defaultRoot != null && defaultRoot.exists()) {
-			for (File entry : defaultRoot.listFiles()) {
-				if (BackupDirectoryParser.isBackup(entry))
-					text.append("<li>" + createOpenEntry(entry) + "</li>");
-			}
-		}
-		if (defaultRoot == null || !defaultRoot.exists()
-				|| defaultRoot.listFiles().length == 0) {
-			text.append("<i>No files found</i>");
-		}
-		text.append("</ol></li>");
+		JPanel locationPanel = new JPanel(new BorderLayout());
+		locationPanel.setOpaque(false);
+		location.setText(defaultRoot.toString());
+		locationPanel.add(location, BorderLayout.CENTER);
+		JButton browserButton = new JButton("Browse");
+		browserButton.addActionListener(this);
+		locationPanel.add(browserButton, BorderLayout.EAST);
+		JEditorPane tp = new JEditorPane("text/html", createHtml());
+		tp.setOpaque(false);
+		locationPanel.add(tp, BorderLayout.NORTH);
+		this.add(locationPanel, BorderLayout.NORTH);
 
-		text.append("<li>A backup which you have opened before:<ol>");
+		filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.Y_AXIS));
+		filePanel.setBackground(new Color(0.9f, 0.9f, 1.0f, 0.6f));
 
-		final Preferences prefs = this.mediator.getPreferences();
-		for (String backupDirectory : prefs.getRecentBackupDirectories()) {
-			text.append("<li>" + createOpenEntry(new File(backupDirectory))
-					+ "</li>");
-		}
-		if (prefs.getRecentBackupDirectories().size() == 0) {
-			text.append("<i>No files found</i>");
-		}
-		text.append("</ol></li>");
+		sp = new JScrollPane(new AlphaContainer(filePanel));
 
-		text.append("<li>Or browse for a new backup directory:<ol>");
-		text.append("<li><a href=\"\">Browse for a new backup</a></li></ol>");
-		text.append("</li></ul>");
+		sp.setBorder(new EmptyBorder(10, 10, 10, 10));
+		sp.getViewport().setOpaque(false);
 
-		JEditorPane linksPane = new TransparentJEditorPane(text.toString());
-		linksPane.setEditable(false);
-		linksPane.addHyperlinkListener(new HyperlinkListener() {
+		JPanel x = new JPanel(new GridLayout(0, 2));
+		x.setOpaque(false);
 
+		// x.setOpaque(false);
+		this.add(x, BorderLayout.CENTER);
+		x.add(sp);
+		go = new JButton("Analyze IPhone Backup >>>");
+		go.setEnabled(false);
+		go.setFont(go.getFont().deriveFont(25.0f));
+		go.addActionListener(new ActionListener() {
 			@Override
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					if (e.getURL() == null)
-						OpenBackupActionListener.browseForBackup(mainFrame,
-								mediator, false);
-					else
-						try {
-							mainFrame.openFile(new File(e.getURL().toURI()));
-						} catch (URISyntaxException e1) {
-							LogFactory.getLogger().log(Level.WARNING,
-									"Unable to parse url to open location", e);
-						}
-				}
+			public void actionPerformed(ActionEvent e) {
+				((MainFrame) frame).openFile(backup);
 			}
 		});
-		this.add(linksPane, BorderLayout.EAST);
+		
+		JPanel y = new JPanel(new BorderLayout());
+		y.setOpaque(false);
+		JPanel z = new JPanel();
+		z.setOpaque(false);
+		z.add(go);
+		y.add(z,BorderLayout.SOUTH);
+		x.add(y);
+		scanForBackups();
+
+		tp.setEditable(false);
 
 		// License Pane (along bottom)
 		final TransparentJEditorPane bannerPane = new TransparentJEditorPane(
 				"<p align=\"right\"><font size=\"12\">This product is available for free, but please consider <a href=''>donating</a>.</font></p>");
-
-
-
+		bannerPane.setBackground(Color.BLUE);
 		bannerPane.addHyperlinkListener(new HyperlinkListener() {
 
 			@Override
@@ -154,14 +145,87 @@ public class OpenPanel extends JXPanel {
 		});
 
 		bannerPane.setEditable(false);
-		bannerPane.setBackground(Color.BLUE);
 		this.add(bannerPane, BorderLayout.SOUTH);
 
 	}
 
-	private String createOpenEntry(final File file) {
-		return "<a href=\"" + file.toURI().toASCIIString() + "\">"
-				+ BackupFile.getBackupName(file) + "</a>";
+	private String createHtml() {
+		StringBuffer text = new StringBuffer();
+		text.append("<h1>IPhone Analyzer</h1>");
+		text.append("<p><font size=\"5\">To begin, select an iOS device backup to open.</font></p>");
+		return text.toString();
+	}
+
+	private void scanForBackups() {
+		backupScanner.scanForBackupsAsync(new BackupScanner.BackupFound() {
+
+			@Override
+			public void report(final File entry) {
+				// we ought to run the updated in the swing
+				// thread
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						JRadioButton r = new JRadioButton(BackupFile
+								.getBackupName(entry));
+						r.setOpaque(false);
+						r.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								backup = entry;
+								go.setEnabled(true);
+							}
+
+						});
+						group.add(r);
+						filePanel.add(r);
+						filePanel.revalidate();
+
+					}
+				});
+
+			}
+		}, defaultRoot);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		final JFileChooser fc;
+		fc = new JFileChooser(location.getText());
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnVal = fc.showOpenDialog(frame);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			defaultRoot = fc.getSelectedFile();
+			location.setText(defaultRoot.toString());
+			backupScanner.stopScanning();
+			filePanel.removeAll();
+			Enumeration<AbstractButton> en = group.getElements();
+			while (en.hasMoreElements())
+				group.remove(en.nextElement());
+			filePanel.revalidate();
+			this.revalidate();
+			frame.repaint();
+			backup = null;
+			go.setEnabled(false);
+			scanForBackups();
+		}
+	}
+
+	public class TransparentJEditorPane extends JEditorPane {
+
+		public TransparentJEditorPane(String text) {
+			super("text/html", text);
+		}
+
+		public void paint(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+					0.5f));
+			super.paint(g2);
+			g2.dispose();
+		}
 
 	}
 
