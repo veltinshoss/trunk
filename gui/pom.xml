@@ -106,10 +106,21 @@
 
 
 	<scm>
-		<connection>scm:svn:svn+ssh://hatless.co.uk/home/svn/iPhoneAnalyzer/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://hatless.co.uk/home/svn/iPhoneAnalyzer/trunk</developerConnection>
+		<connection>scm:svn:https://iphoneanalyzer.svn.sourceforge.net/svnroot/iphoneanalyzer/trunk/gui</connection>
+		<developerConnection>scm:svn:https://iphoneanalyzer.svn.sourceforge.net/svnroot/iphoneanalyzer/trunk/gui/</developerConnection>
+		<url>http://iphoneanalyzer.svn.sourceforge.net/viewvc/iphoneanalyzer/trunk/gui</url>
 	</scm>
 
 	<groupId>com.crypticbit</groupId>
-	<version>1</version>
+	<version>2</version>
+	
+	<!-- Enabling the use of FTP -->
+<distributionManagement>
+  <repository>
+    <id>ssh-repository</id>
+    <url>
+scpexe://frs.sourceforge.net:/home/frs/project/iphoneanalyzer</url>
+  </repository>
+</distributionManagement>
+	
 </project>
