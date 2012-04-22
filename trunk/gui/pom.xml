@@ -106,7 +106,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>wagon-maven-plugin</artifactId>
 				<version>1.0-beta-3</version>
-				<goal>sourceforge</goal>
+				<goals>deploy</goals>
 				<configuration>
 					<fromFile>${project.build.directory}/${project.build.finalName}</fromFile>
 					<url>scp://frs.sourceforge.net:/home/frs/project/iphoneanalyzer/</url>
