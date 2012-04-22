@@ -101,6 +101,26 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<configuration>
+					<fromFile>${project.build.directory}/${project.build.finalName}</fromFile>
+					<url>scp://frs.sourceforge.net:/home/frs/project/iphoneanalyzer/</url>
+				</configuration>
+				<executions>
+					<execution>
+						<id>ssh-repository</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload-single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 
 		<extensions>
@@ -123,14 +143,7 @@
 	<groupId>com.crypticbit</groupId>
 	<version>2</version>
 
-	<!-- Enabling the use of FTP -->
-	<distributionManagement>
-		<repository>
-			<id>ssh-repository</id>
-			<url>
-scpexe://frs.sourceforge.net:/home/frs/project/iphoneanalyzer/</url>
-		</repository>
-	</distributionManagement>
+
 
 
 
