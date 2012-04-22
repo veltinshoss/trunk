@@ -110,6 +110,13 @@
 					<fromFile>${project.build.directory}/${project.build.finalName}.jar</fromFile>
 					<url>scp://frs.sourceforge.net/home/frs/project/iphoneanalyzer</url>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-ssh</artifactId>
+						<version>1.0-beta-7</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<id>ssh-repository</id>
@@ -123,13 +130,9 @@
 
 		</plugins>
 
-		<!-- <extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-				<version>1.0-beta-6</version>
-			</extension>
-		</extensions>  -->
+		<!-- <extensions> <extension> <groupId>org.apache.maven.wagon</groupId> 
+			<artifactId>wagon-ssh-external</artifactId> <version>1.0-beta-6</version> 
+			</extension> </extensions> -->
 	</build>
 
 
