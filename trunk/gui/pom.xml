@@ -128,7 +128,7 @@
 		<repository>
 			<id>ssh-repository</id>
 			<url>
-scpexe://frs.sourceforge.net:/home/frs/project/iphoneanalyzer</url>
+scpexe://frs.sourceforge.net:/home/frs/project/iphoneanalyzer/</url>
 		</repository>
 	</distributionManagement>
 
