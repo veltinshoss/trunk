@@ -102,6 +102,15 @@
 				</executions>
 			</plugin>
 		</plugins>
+
+		<extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 	</build>
 
 
@@ -113,14 +122,16 @@
 
 	<groupId>com.crypticbit</groupId>
 	<version>2</version>
-	
+
 	<!-- Enabling the use of FTP -->
-<distributionManagement>
-  <repository>
-    <id>ssh-repository</id>
-    <url>
+	<distributionManagement>
+		<repository>
+			<id>ssh-repository</id>
+			<url>
 scpexe://frs.sourceforge.net:/home/frs/project/iphoneanalyzer</url>
-  </repository>
-</distributionManagement>
-	
+		</repository>
+	</distributionManagement>
+
+
+
 </project>
