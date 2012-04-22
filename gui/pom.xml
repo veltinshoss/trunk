@@ -107,7 +107,7 @@
 				<artifactId>wagon-maven-plugin</artifactId>
 				<version>1.0-beta-3</version>
 				<configuration>
-					<fromFile>${project.build.directory}/${project.build.finalName}</fromFile>
+					<fromFile>${project.build.directory}/${project.build.finalName}.jar</fromFile>
 					<url>scpexe://frs.sourceforge.net:/home/frs/project/iphoneanalyzer/</url>
 				</configuration>
 				<executions>
