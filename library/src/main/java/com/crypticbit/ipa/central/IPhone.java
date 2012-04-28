@@ -57,8 +57,7 @@ import com.crypticbit.ipa.results.TextSearchAlgorithm;
  * coded type
  * </ul>
  */
-public class IPhone
-{
+public class IPhone {
 	// key details of included backup files
 	private Map<BackupFile, BackupFileType> backupFileInstanceToType = new HashMap<BackupFile, BackupFileType>();
 	private List<BackupFile> backupFiles = new ArrayList<BackupFile>();
@@ -100,44 +99,36 @@ public class IPhone
 	 */
 	public IPhone(final Map<String, Object> globalVars,
 			final BackupConfigurationElements configElements)
-			throws IOException, FileParseException, IPhoneParseException
-	{
+			throws IOException, FileParseException, IPhoneParseException {
 		this.globalVars = globalVars;
 		this.configElements = configElements;
 	}
 
-	public EventList getAllEvents(final ProgressIndicator progressIndicator)
-	{
+	public EventList getAllEvents(final ProgressIndicator progressIndicator) {
 
-		if (events == null)
-		{
+		if (events == null) {
 			events = new EventList();
 			int loop = 0;
 			int size = this.backupFileInstanceToType.keySet().size();
-			for (BackupFile bf : this.backupFileInstanceToType.keySet())
-			{
+			for (BackupFile bf : this.backupFileInstanceToType.keySet()) {
 
 				progressIndicator.progressUpdate(loop++, size,
 						bf.getOriginalFileName());
 
 				ParsedData pd = bf.getParsedData();
 				// if (pd != null)
-				for (Class i : pd.getSubInterfaces())
-				{
+				for (Class i : pd.getSubInterfaces()) {
 					if (Conceptable.class.isAssignableFrom(i))
-						try
-						{
+						try {
 							events.addAll(getConceptFactory().createWrapper(
 									(Collection<Conceptable>) pd
 											.getRecordsByInterface(i)));
-						} catch (FileParseException e)
-						{
+						} catch (FileParseException e) {
 							// FIXME
 							// TODO Auto-generated catch block
 							LogFactory.getLogger().log(Level.SEVERE,
 									"Exception", e);
-						} catch (ConceptException e)
-						{
+						} catch (ConceptException e) {
 							// TODO Auto-generated catch block
 							LogFactory.getLogger().log(Level.SEVERE,
 									"Exception", e);
@@ -149,31 +140,25 @@ public class IPhone
 		return events;
 	}
 
-	private ConceptFactory getConceptFactory()
-	{
+	private ConceptFactory getConceptFactory() {
 		if (conceptFactory == null)
 			conceptFactory = new ConceptFactory(getDefaultLocale());
 		return conceptFactory;
 	}
 
-	public <I> Collection<I> getRecordsByInterface(Class<I> clazz)
-	{
+	public <I> Collection<I> getRecordsByInterface(Class<I> clazz) {
 		BackupFileView bfv = BackupFileView.findByInterface(clazz);
-		if (bfv != null)
-		{
+		if (bfv != null) {
 			ParsedData parsedDataForType = getParsedDataForType(bfv);
-			try
-			{
+			try {
 				return parsedDataForType == null ? null : parsedDataForType
 						.getRecordsByInterface(clazz);
-			} catch (BadFileFormatException e)
-			{
+			} catch (BadFileFormatException e) {
 				LogFactory.getLogger().log(Level.SEVERE, "Exception", e);
 				LogFactory.getLogger().log(Level.INFO,
 						"Ignoring badly formed file");
 				return null;
-			} catch (FileParseException e)
-			{
+			} catch (FileParseException e) {
 				e.printStackTrace();
 				return null;
 			}
@@ -181,18 +166,14 @@ public class IPhone
 			return null;
 	}
 
-	public <I> I getByInterface(Class<I> clazz)
-	{
+	public <I> I getByInterface(Class<I> clazz) {
 		BackupFileView bfv = BackupFileView.findByInterface(clazz);
-		if (bfv != null)
-		{
+		if (bfv != null) {
 			ParsedData parsedDataForType = getParsedDataForType(bfv);
-			try
-			{
+			try {
 				return parsedDataForType == null ? null : parsedDataForType
 						.getContentbyInterface(clazz);
-			} catch (BadFileFormatException e)
-			{
+			} catch (BadFileFormatException e) {
 				LogFactory.getLogger().log(Level.SEVERE, "Exception", e);
 				LogFactory.getLogger().log(Level.INFO,
 						"Ignoring badly formed file");
@@ -202,14 +183,11 @@ public class IPhone
 			return null;
 	}
 
-	public List<BackupFile> getBackupFileByType(final BackupFileType bf)
-	{
+	public List<BackupFile> getBackupFileByType(final BackupFileType bf) {
 		List<BackupFile> result = new ArrayList<BackupFile>();
 		for (Entry<BackupFile, BackupFileType> e : this.backupFileInstanceToType
-				.entrySet())
-		{
-			if (e.getValue() == bf)
-			{
+				.entrySet()) {
+			if (e.getValue() == bf) {
 				result.add(e.getKey());
 			}
 		}
@@ -223,14 +201,12 @@ public class IPhone
 	 * @return list of backup files for this view
 	 */
 	public List<BackupFile> getBackupFileByType(
-			final BackupFileView backupFileView)
-	{
+			final BackupFileView backupFileView) {
 
 		List<BackupFile> result = new ArrayList<BackupFile>();
 
 		for (Entry<BackupFile, BackupFileType> e : this.backupFileInstanceToType
-				.entrySet())
-		{
+				.entrySet()) {
 			BackupFile currentFile = e.getKey();
 			BackupFileType currentType = currentFile.getParserType(); // PLIST,
 																		// MEDIA,
@@ -255,16 +231,14 @@ public class IPhone
 		return result;
 	}
 
-	public BackupFile getBackupFileFromName(final String name)
-	{
+	public BackupFile getBackupFileFromName(final String name) {
 		for (BackupFile bf : this.backupFiles)
 			if (bf.getCompleteOriginalFileName().equals(name))
 				return bf;
 		return null;
 	}
 
-	public BackupConfigurationElements getConfigElements()
-	{
+	public BackupConfigurationElements getConfigElements() {
 		return this.configElements;
 	}
 
@@ -278,25 +252,20 @@ public class IPhone
 	 * @return a map containing a BackupFileType for each found type of parsed
 	 *         file (the key) and a count of its occurance (value)
 	 */
-	public Map<BackupFileType, Integer> getCountOfBackupFileTypes()
-	{
+	public Map<BackupFileType, Integer> getCountOfBackupFileTypes() {
 		Map<BackupFileType, Integer> result = new HashMap<BackupFileType, Integer>();
 		for (Entry<BackupFile, BackupFileType> e : this.backupFileInstanceToType
-				.entrySet())
-		{
-			if (result.get(e.getValue()) == null)
-			{
+				.entrySet()) {
+			if (result.get(e.getValue()) == null) {
 				result.put(e.getValue(), 1);
-			} else
-			{
+			} else {
 				result.put(e.getValue(), result.get(e.getValue()) + 1);
 			}
 		}
 		return result;
 	}
 
-	public Object getGlobalVariable(final String key)
-	{
+	public Object getGlobalVariable(final String key) {
 		if (this.globalVars.containsKey(key))
 			return this.globalVars.get(key);
 		else
@@ -310,13 +279,11 @@ public class IPhone
 	 *         including it's real name (the original one held on the device)
 	 *         and a link to the unwrapped contents
 	 */
-	public Collection<BackupFile> getParsedFiles()
-	{
+	public Collection<BackupFile> getParsedFiles() {
 		return new HashSet<BackupFile>(this.backupFiles);
 	}
 
-	public void recreateBackupDirectory(final File directory)
-	{
+	public void recreateBackupDirectory(final File directory) {
 		throw new UnsupportedOperationException(
 				"Can not reform backup directory");
 		// for (EncodedBackupFile bf : backupFiles)
@@ -346,8 +313,7 @@ public class IPhone
 	 * @return the temporary location all files were unpacked to
 	 * @throws IOException
 	 */
-	public File restoreDirectory() throws IOException
-	{
+	public File restoreDirectory() throws IOException {
 		// to hold files as they were on the original device
 		File deviceRootDir = com.crypticbit.ipa.io.util.IoUtils
 				.createTempDir(".deviceRoot");
@@ -362,11 +328,17 @@ public class IPhone
 	 *            the directory to restore the backup folder to
 	 * @throws IOException
 	 */
-	public void restoreDirectory(final File directory) throws IOException
-	{
-		for (BackupFile bf : this.backupFiles)
-		{
-			bf.restoreFile(directory);
+	public void restoreDirectory(final File directory) throws IOException {
+		for (BackupFile bf : this.backupFiles) {
+			try {
+				bf.restoreFile(directory);
+			} catch (IOException e) {
+				LogFactory.getLogger().log(
+						Level.WARNING,
+						"Didn't export file " + bf.getOriginalFileName()
+								+ " because " + e.getMessage());
+			}
+
 		}
 	}
 
@@ -381,17 +353,13 @@ public class IPhone
 	 * @throws NavigateException
 	 */
 	public Set<Location> search(final TextSearchAlgorithm searchType,
-			final String searchString)
-	{
+			final String searchString) {
 		Set<Location> result = new HashSet<Location>();
-		for (BackupFile bf : this.backupFiles)
-		{
-			try
-			{
+		for (BackupFile bf : this.backupFiles) {
+			try {
 				result.addAll(bf.getParsedData().search(searchType,
 						searchString));
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				// FIXME
 				e.printStackTrace();
 			}
@@ -409,20 +377,17 @@ public class IPhone
 	 */
 	public Map<BackupFile, Set<Location>> searchGrouped(
 			final TextSearchAlgorithm searchType, final String searchString)
-			throws NavigateException
-	{
+			throws NavigateException {
 		return groupResults(search(searchType, searchString));
 	}
 
-	void addBackupFile(final BackupFile backupFile)
-	{
+	void addBackupFile(final BackupFile backupFile) {
 		this.backupFiles.add(backupFile);
 		this.backupFileInstanceToType.put(backupFile,
 				backupFile.getParserType());
 	}
 
-	private ParsedData getParsedDataForType(final BackupFileView bf)
-	{
+	private ParsedData getParsedDataForType(final BackupFileView bf) {
 		List<BackupFile> temp = getBackupFileByType(bf);
 		if (temp.size() >= 1)
 			return temp.get(0).getParsedData();
@@ -431,21 +396,17 @@ public class IPhone
 	}
 
 	private Map<BackupFile, Set<Location>> groupResults(
-			final Set<Location> results)
-	{
+			final Set<Location> results) {
 		final TreeMapContainingSet<BackupFile, Location> files = new TreeMapContainingSet<BackupFile, Location>();
-		for (Location location : results)
-		{
+		for (Location location : results) {
 			files.putSet(location.getBackupFile(), location);
 		}
 		return files;
 	}
 
 	public void restoreFiles(Collection<BackupFile> files, File directory)
-			throws IOException
-	{
-		for (BackupFile bf : files)
-		{
+			throws IOException {
+		for (BackupFile bf : files) {
 			bf.restoreFile(directory);
 		}
 
@@ -454,18 +415,14 @@ public class IPhone
 	private Map<String, String> peopleLookup;
 	private EventList events;
 
-	public String lookupNumber(String address)
-	{
-		if (peopleLookup == null)
-		{
+	public String lookupNumber(String address) {
+		if (peopleLookup == null) {
 			peopleLookup = new HashMap<String, String>();
 			AddressBook ab;
-			try
-			{
+			try {
 				ab = getParsedDataForType(BackupFileView.ADDRESS_BOOK)
 						.getContentbyInterface(AddressBook.class);
-			} catch (BadFileFormatException e)
-			{
+			} catch (BadFileFormatException e) {
 				return address;
 			}
 			for (Person p : ab)
@@ -477,7 +434,6 @@ public class IPhone
 										.getFirstName() + " ")
 										+ (p.getLastName() == null ? "" : p
 												.getLastName()));
-			LogFactory.getLogger().log(Level.INFO, "******\n" + peopleLookup);
 		}
 
 		if (peopleLookup.containsKey(telephoneSuffix(address)))
@@ -487,52 +443,43 @@ public class IPhone
 
 	}
 
-	private String telephoneSuffix(String telephoneNumber)
-	{
+	private String telephoneSuffix(String telephoneNumber) {
 		if (telephoneNumber == null)
 			return null;
 		return telephoneNumber.substring(Math.max(0,
 				telephoneNumber.length() - 6));
 	}
 
-	public boolean isEventsLoaded()
-	{
+	public boolean isEventsLoaded() {
 		return events != null;
 	}
 
 	private String locale = null;
 
 	// FIXME use and improve
-	public String getDefaultLocale()
-	{
-		if (locale == null)
-		{
+	public String getDefaultLocale() {
+		if (locale == null) {
 			LogFactory.getLogger().log(Level.INFO,
 					"Trying DateTime prefs to get locale");
-			try
-			{
+			try {
 				ParsedData parsedDataForDateTime = getParsedDataForType(BackupFileView.DATETIME_PREFS);
-				if (parsedDataForDateTime != null)
-				{
+				if (parsedDataForDateTime != null) {
 					DateTimePrefs x = parsedDataForDateTime
 							.getContentbyInterface(DateTimePrefs.class);
 					locale = x.getDateTime().getLocaleCode();
 				}
-			} catch (Exception e1)
-			{
+			} catch (Exception e1) {
 				LogFactory.getLogger().log(Level.WARNING,
 						"Problem finding locale : " + locale, e1);
 			}
 
-			if (locale == null)
-			{
+			if (locale == null) {
 				LogFactory.getLogger().log(Level.INFO,
 						"Trying Java Locale to get locale");
 				locale = Locale.getDefault().getCountry();
 			}
 
-			if (locale == null)
-			{
+			if (locale == null) {
 				locale = "XX";
 
 				LogFactory.getLogger().log(Level.WARNING,
