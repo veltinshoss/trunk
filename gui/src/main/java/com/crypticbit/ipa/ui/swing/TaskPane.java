@@ -94,7 +94,7 @@ public class TaskPane extends JXPanel implements
 
 		JScrollPane scroll = new JScrollPane(taskPane);
 		add(scroll, BorderLayout.CENTER);
-		validateTree();
+//		validateTree();
 
 	}
 
