@@ -407,7 +407,14 @@ public class IPhone {
 	public void restoreFiles(Collection<BackupFile> files, File directory)
 			throws IOException {
 		for (BackupFile bf : files) {
-			bf.restoreFile(directory);
+			try {
+				bf.restoreFile(directory);
+			} catch (Exception e) {
+				LogFactory.getLogger().log(
+						Level.WARNING,
+						"Didn't export file " + bf.getOriginalFileName()
+								+ " because " + e.getMessage());
+			}
 		}
 
 	}
