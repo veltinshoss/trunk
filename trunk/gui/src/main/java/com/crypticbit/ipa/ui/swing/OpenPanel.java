@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.logging.Level;
 
 import javax.swing.AbstractButton;
@@ -111,21 +112,29 @@ public class OpenPanel extends JXPanel implements ActionListener {
 				((MainFrame) frame).openFile(backup);
 			}
 		});
-		
+
 		JPanel y = new JPanel(new BorderLayout());
 		y.setOpaque(false);
 		JPanel z = new JPanel();
 		z.setOpaque(false);
 		z.add(go);
-		y.add(z,BorderLayout.SOUTH);
+		y.add(z, BorderLayout.SOUTH);
 		x.add(y);
 		scanForBackups();
 
 		tp.setEditable(false);
 
 		// License Pane (along bottom)
+
+		String messages[] = {
+				"This product is available for free, but please consider <a href=\"https://sourceforge.net/project/project_donations.php?group_id=296588\">donating</a>.",
+				"This product is available for free, but please consider <a href=\"https://sourceforge.net/projects/iphoneanalyzer/reviews/?sort=usefulness&filter=all\">up voting us on sourceforge</a>",
+				"This product is available for free, but please consider write a blog or reccomending us to a friend</a>" };
+//		String message = "Thank you for purchasing this product.";
+		String message = messages[new Random().nextInt(messages.length)];
+		
 		final TransparentJEditorPane bannerPane = new TransparentJEditorPane(
-				"<p align=\"right\"><font size=\"12\">This product is available for free, but please consider <a href=''>donating</a>.</font></p>");
+				"<p align=\"right\"><font size=\"12\">"+message+"</font></p>");
 		bannerPane.setBackground(Color.BLUE);
 		bannerPane.addHyperlinkListener(new HyperlinkListener() {
 
@@ -133,9 +142,7 @@ public class OpenPanel extends JXPanel implements ActionListener {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					try {
-						Desktop.getDesktop()
-								.browse(new URI(
-										"https://sourceforge.net/project/project_donations.php?group_id=296588"));
+						Desktop.getDesktop().browse(e.getURL().toURI());
 					} catch (Exception e1) {
 						// do nothing
 					}

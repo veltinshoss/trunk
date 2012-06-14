@@ -55,16 +55,13 @@ import com.crypticbit.ipa.ui.swing.util.TransferActionListener;
 
 @SuppressWarnings("serial")
 public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
-		HighlightChangeListener
-{
+		HighlightChangeListener {
 	/**
 	 * Auto-generated main method to display this JFrame
 	 */
-	public static void main(final String[] args)
-	{
+	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
-			public void run()
-			{
+			public void run() {
 				MainFrame inst = new MainFrame();
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
@@ -83,8 +80,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	private OpenBackupActionListener openBackupActionListener;
 	private TransferActionListener actionListener;
 
-	public MainFrame()
-	{
+	public MainFrame() {
 		super("iPhone Analyzer");
 		openBackupActionListener = new OpenBackupActionListener(MainFrame.this,
 				mediator, false);
@@ -92,14 +88,12 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	}
 
 	@Override
-	public void clearHighlighting()
-	{
+	public void clearHighlighting() {
 		// Do nothing
 	}
 
 	@Override
-	public void displayErrorDialog(String message, final Throwable cause)
-	{
+	public void displayErrorDialog(String message, final Throwable cause) {
 		StringBuilder logFileMessage = new StringBuilder();
 		String title = "Error";
 		String category = "ERROR";
@@ -118,12 +112,10 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		String basicErrorMessage;
 		String detailedErrorMessage = cause.getLocalizedMessage();
 
-		try
-		{
+		try {
 			logFileMessage.append(writeErrorLog(message, cause));
 			basicErrorMessage = logFileMessage.toString();
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			// use original message
 			basicErrorMessage = message;
 		}
@@ -145,8 +137,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	 *             if writing the log file fails
 	 */
 	public static String writeErrorLog(final String message,
-			final Throwable cause) throws IOException
-	{
+			final Throwable cause) throws IOException {
 		File f = File.createTempFile("iPhoneAnalzyerErrorLog.", ".log");
 		LogFactory.getLogger().log(Level.WARNING,
 				"Found issue, logged it to :" + f.getPath());
@@ -162,11 +153,12 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		printStream.print(System.getProperty("java.vendor"));
 		printStream.print("\r\nJava Version: ");
 		printStream.print(System.getProperty("java.version"));
+		printStream.print("\r\nProduct Version: ");
+		printStream.print(About.getVersion());
 		printStream.print("\r\nMessage: ");
 		printStream.print(message);
 		printStream.print("\r\n\r\nCause:\r\n");
-		for (Throwable e = cause; e != null; e = e.getCause())
-		{
+		for (Throwable e = cause; e != null; e = e.getCause()) {
 			e.printStackTrace(printStream);
 		}
 		printStream.close();
@@ -174,31 +166,26 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	}
 
 	@Override
-	public void highlight(final Collection<Location> locations)
-	{
+	public void highlight(final Collection<Location> locations) {
 		// Do nothing
 	}
 
 	@Override
-	public void moveTo(final Location location)
-	{
+	public void moveTo(final Location location) {
 		// do nothing
 	}
 
 	private void addOpenBackupFileAction(final File backupDirectory,
-			final JMenuItem parent)
-	{
+			final JMenuItem parent) {
 		parent.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+			public void actionPerformed(final ActionEvent e) {
 				openFile(backupDirectory);
 			}
 		});
 	}
 
-	private JMenuItem createOpenBackupFileMenu(final File entry)
-	{
+	private JMenuItem createOpenBackupFileMenu(final File entry) {
 
 		JMenuItem openDefault = new JMenuItem();
 		openDefault.setText(getBackupName(entry));
@@ -207,22 +194,17 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		return openDefault;
 	}
 
-	public String getBackupName(final File entry)
-	{
-		try
-		{
+	public String getBackupName(final File entry) {
+		try {
 			return BackupDirectoryParser.getBackupSummary(entry);
-		} catch (FileParseException e1)
-		{
+		} catch (FileParseException e1) {
 			return "File problem: " + entry.getAbsolutePath();
-		} catch (IOException e1)
-		{
+		} catch (IOException e1) {
 			return "Access problem: " + entry.getAbsolutePath();
 		}
 	}
 
-	private void createFileMenu(final JMenu fileMenu)
-	{
+	private void createFileMenu(final JMenu fileMenu) {
 		JMenuItem openFileMenuItem = new JMenuItem();
 		fileMenu.add(openFileMenuItem);
 		openFileMenuItem.setText("Open: New Backup directory");
@@ -232,18 +214,25 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		JMenu defaultMenu = new JMenu("Open: Default iTunes location");
 		File defaultRoot = BackupScanner.getDefaultRoot();
 
-		if (defaultRoot != null && defaultRoot.exists())
-		{
-			for (File entry : defaultRoot.listFiles())
-			{
-				defaultMenu.add(createOpenBackupFileMenu(entry));
+		if (defaultRoot != null && defaultRoot.exists()) {
+			for (File entry : defaultRoot.listFiles()) {
+				try {
+					defaultMenu.add(createOpenBackupFileMenu(entry));
+				} catch (Exception e) {
+					defaultMenu.add("Unable to create entry for "
+							+ entry.getAbsolutePath());
+					LogFactory.getLogger().log(
+							Level.WARNING,
+							"Problem creating entry for "
+									+ entry.getAbsolutePath() + " with error "
+									+ e.getMessage(), e);
+				}
 			}
 			fileMenu.add(defaultMenu);
 		}
 		JMenu historyMenu = new JMenu("Open: History");
 		for (String backupDirectory : this.mediator.getPreferences()
-				.getRecentBackupDirectories())
-		{
+				.getRecentBackupDirectories()) {
 			historyMenu
 					.add(createOpenBackupFileMenu(new File(backupDirectory)));
 		}
@@ -270,15 +259,13 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		openFileFileMenuItem.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+			public void actionPerformed(final ActionEvent e) {
 				final JFileChooser fc;
 
 				fc = new JFileChooser();
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int returnVal = fc.showOpenDialog(MainFrame.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION)
-				{
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					MainFrame.this.mediator
 							.fireSelectedFileChangeListeners(new PlainBackupFile(
 									fc.getSelectedFile()));
@@ -297,8 +284,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		prefsMenu.add(mapPrefsMenuItem);
 		mapPrefsMenuItem.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+			public void actionPerformed(final ActionEvent e) {
 				PrefsDialog prefsDialog = new PrefsDialog(MainFrame.this,
 						MainFrame.this.mediator);
 				prefsDialog.setLocationRelativeTo(MainFrame.this);
@@ -326,29 +312,23 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		exitMenuItem.setText("Exit");
 		exitMenuItem.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+			public void actionPerformed(final ActionEvent e) {
 				System.exit(0);
 			}
 		});
 	}
 
-	private void initGUI()
-	{
+	private void initGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		try
-		{
-			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
-			{
-				if ("Nimbus".equals(info.getName()))
-				{
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
 					UIManager.setLookAndFeel(info.getClassName());
 					break;
 				}
 			}
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			// If Nimbus is not available, you can set the GUI to another look
 			// and feel.
 		}
@@ -356,8 +336,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 		// update view as Frames resize
 		Toolkit.getDefaultToolkit().setDynamicLayout(true);
 		actionListener = new TransferActionListener();
-		try
-		{
+		try {
 			{
 				this.searchResultsPane = new SearchResultsPane(this.mediator);
 				this.searchResultsPane
@@ -377,8 +356,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 
 					@Override
 					public void backupDirectoryChanged(File directory,
-							IPhone backupDirectory)
-					{
+							IPhone backupDirectory) {
 						CardLayout cl = (CardLayout) (cards.getLayout());
 						cl.show(cards, "View");
 
@@ -439,8 +417,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 								@Override
 								public void backupDirectoryChanged(
 										final File directory,
-										final IPhone backupDirectory)
-								{
+										final IPhone backupDirectory) {
 									fileMenu.removeAll();
 									createFileMenu(fileMenu);
 								}
@@ -460,15 +437,13 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 								java.awt.Event.CTRL_MASK));
 						searchMenuItem.addActionListener(new ActionListener() {
 							@Override
-							public void actionPerformed(final ActionEvent e)
-							{
+							public void actionPerformed(final ActionEvent e) {
 								SearchDialog searchDialog = new SearchDialog(
 										MainFrame.this, MainFrame.this.mediator);
 								searchDialog
 										.setLocationRelativeTo(MainFrame.this);
 								searchDialog.setVisible(true);
-								if (searchDialog.getResultsMap() != null)
-								{
+								if (searchDialog.getResultsMap() != null) {
 									MainFrame.this.searchResultsPane
 											.updateSearchResults(searchDialog
 													.getResultsMap());
@@ -491,8 +466,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 						helpMenuItem.setText("About");
 						helpMenuItem.addActionListener(new ActionListener() {
 							@Override
-							public void actionPerformed(final ActionEvent arg0)
-							{
+							public void actionPerformed(final ActionEvent arg0) {
 								AboutDialog.showDialog(MainFrame.this);
 							}
 						});
@@ -501,39 +475,42 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 						logMenuItem.setText("Log");
 						logMenuItem.addActionListener(new ActionListener() {
 							@Override
-							public void actionPerformed(final ActionEvent arg0)
-							{
+							public void actionPerformed(final ActionEvent arg0) {
 								mediator.showPanel(GeneralPanelTypes.LOG);
 							}
 						});
 						JMenuItem clearRegMenuItem = new JMenuItem();
 						helpMenu.add(clearRegMenuItem);
 						clearRegMenuItem.setText("Clear Registration Details");
-						clearRegMenuItem.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(final ActionEvent arg0)
-							{
-								Frame frame = (Frame)mediator.getMainFrame();
-								
-								//default icon, custom title
-								int value = JOptionPane.showConfirmDialog(
-								    frame,
-								    "Do you really want to unregister iPhone Analyzer?",
-								    "Unregister?",
-								    JOptionPane.YES_NO_OPTION);
+						clearRegMenuItem
+								.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(
+											final ActionEvent arg0) {
+										Frame frame = (Frame) mediator
+												.getMainFrame();
 
-								if( value == JOptionPane.YES_OPTION )
-								{
-									mediator.getPreferences().clearRegistrationDetails();
-									JOptionPane.showMessageDialog(frame, "Registration details cleared, this will take effect at next restart.");
-								}
-							}
-						});
+										// default icon, custom title
+										int value = JOptionPane
+												.showConfirmDialog(
+														frame,
+														"Do you really want to unregister iPhone Analyzer?",
+														"Unregister?",
+														JOptionPane.YES_NO_OPTION);
+
+										if (value == JOptionPane.YES_OPTION) {
+											mediator.getPreferences()
+													.clearRegistrationDetails();
+											JOptionPane
+													.showMessageDialog(frame,
+															"Registration details cleared, this will take effect at next restart.");
+										}
+									}
+								});
 					}
 				}
 			}
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			this.mediator.displayErrorDialog("Problem configuring display", e);
 		}
 	}
@@ -541,8 +518,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	/**
 	 * Create an Edit menu to support cut/copy/paste.
 	 */
-	private JMenuBar createMenuBar()
-	{
+	private JMenuBar createMenuBar() {
 		JMenuItem menuItem = null;
 		JMenuBar menuBar = new JMenuBar();
 
@@ -562,16 +538,14 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 	}
 
 	@Override
-	public void displayWarningDialog(String message, Throwable cause)
-	{
+	public void displayWarningDialog(String message, Throwable cause) {
 		org.jdesktop.swingx.JXErrorPane.showDialog(getContentPane(),
 				new ErrorInfo("Warning", message, message, "Warning", cause,
 						Level.INFO, null));
 
 	}
 
-	public void openFile(final File backupDirectory)
-	{
+	public void openFile(final File backupDirectory) {
 		openBackupActionListener.openBackupFile(backupDirectory);
 	}
 
