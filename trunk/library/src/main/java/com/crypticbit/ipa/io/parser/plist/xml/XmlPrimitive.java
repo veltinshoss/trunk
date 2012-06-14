@@ -46,9 +46,11 @@ class XmlPrimitive extends PListPrimitiveImpl implements PListPrimitive
 				try
 				{
 					return ISO_8601_DATE_FORMAT.parse(elem.getContent());
+				} catch (NumberFormatException nfe) {
+					throw new FileParseException("Failed parsing "+elem.getContent()+" as a date",nfe);
 				} catch (java.text.ParseException e)
 				{
-					throw new FileParseException(e);
+					throw new FileParseException("Failed parsing "+elem.getContent()+" as a date",e);
 				}
 			}
 		},
