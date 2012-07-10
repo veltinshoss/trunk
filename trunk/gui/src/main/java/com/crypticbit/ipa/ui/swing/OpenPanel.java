@@ -11,10 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Random;
 import java.util.logging.Level;
 
 import javax.swing.AbstractButton;
@@ -124,17 +122,10 @@ public class OpenPanel extends JXPanel implements ActionListener {
 
 		tp.setEditable(false);
 
-		// License Pane (along bottom)
-
-		String messages[] = {
-				"This product is available for free, but please consider <a href=\"https://sourceforge.net/project/project_donations.php?group_id=296588\">donating</a>.",
-				"This product is available for free, but please consider <a href=\"https://sourceforge.net/projects/iphoneanalyzer/reviews/?sort=usefulness&filter=all\">up voting us on sourceforge</a>",
-				"This product is available for free, but please consider write a blog or reccomending us to a friend</a>" };
-//		String message = "Thank you for purchasing this product.";
-		String message = messages[new Random().nextInt(messages.length)];
-		
+		// License Pane (along bottom)		
 		final TransparentJEditorPane bannerPane = new TransparentJEditorPane(
-				"<p align=\"right\"><font size=\"12\">"+message+"</font></p>");
+				"<p align=\"right\"><font size=\"12\">For additional features and plugins please contact sales@crypticbit.com</font></p>");
+
 		bannerPane.setBackground(Color.BLUE);
 		bannerPane.addHyperlinkListener(new HyperlinkListener() {
 
