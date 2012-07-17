@@ -31,6 +31,7 @@ public class CallRecordView extends JPanel implements SpecialView
 		displayConverter = mediator.getDisplayConverter();
 		setLayout(new GridLayout(1, 1));
 		this.table = new JTable();
+		this.table.setTransferHandler(new CSVTransferHandler());
 		table.getActionMap().put(
 				TransferHandler.getCopyAction().getValue(Action.NAME),
 				TransferHandler.getCopyAction());

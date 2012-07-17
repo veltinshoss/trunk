@@ -280,6 +280,7 @@ public class SQLUndeleteview extends View
 
 		this.setLayout(new BorderLayout());
 		final JTable table = new JTable(tm);
+		table.setTransferHandler(new CSVTransferHandler());
 		table.getActionMap().put(
 				TransferHandler.getCopyAction().getValue(Action.NAME),
 				TransferHandler.getCopyAction());
