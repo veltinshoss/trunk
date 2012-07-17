@@ -33,6 +33,7 @@ private DisplayConverter displayConverter;
 		this.table = new JTable();
 		this.add(new JScrollPane(this.table));
 
+		table.setTransferHandler(new CSVTransferHandler());
 		table.getActionMap().put(
 				TransferHandler.getCopyAction().getValue(Action.NAME),
 				TransferHandler.getCopyAction());

@@ -112,6 +112,7 @@ public class AddressBookView extends JPanel implements SpecialView
 					return String.class;
 			}
 		};
+		this.table.setTransferHandler(new CSVTransferHandler());
 		this.table.getActionMap().put(
 				TransferHandler.getCopyAction().getValue(Action.NAME),
 				TransferHandler.getCopyAction());
