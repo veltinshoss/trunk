@@ -126,5 +126,10 @@ public class Version2BackupFile extends BackupFile
 			this.originalFileName = UNKNOWN_FAKE_PATH + this.contentsFile.getName();
 		}
 	}
-	
+
+	@Override
+	public String toString()
+	{
+		return "backup File (v2): " + this.originalFileName+" ("+contentsFile.getAbsolutePath()+")";
+	}
 }

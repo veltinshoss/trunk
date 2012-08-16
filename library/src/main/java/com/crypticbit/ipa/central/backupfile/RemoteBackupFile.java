@@ -62,4 +62,14 @@ public class RemoteBackupFile extends BackupFile
 	{
 		return IoUtils.getBytesFromFile(getContentsInputStream());
 	}
+	
+	@Override
+	public String toString()
+	{
+		try {
+			return "backup File (remote): " + this.originalFileName+" ("+file.getURL()+")";
+		} catch (FileSystemException e) {
+			return "backup File (remote): " + this.originalFileName+" (error getting location)";
+		}
+	}
 }

@@ -38,5 +38,11 @@ public class PlainBackupFile extends BackupFile
 	{
 		return IoUtils.getBytesFromFile(this.contentsFile);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "backup File (plain): " + this.originalFileName;
+	}
 
 }

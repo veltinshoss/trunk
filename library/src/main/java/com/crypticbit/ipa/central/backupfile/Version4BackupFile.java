@@ -36,6 +36,11 @@ public class Version4BackupFile extends BackupFile
 		return IoUtils.getBytesFromFile(this.contentsFile);
 	}
 
+	@Override
+	public String toString()
+	{
+		return "backup File (v4): " + this.originalFileName+" ("+contentsFile.getAbsolutePath()+")";
+	}
 	
 
 }

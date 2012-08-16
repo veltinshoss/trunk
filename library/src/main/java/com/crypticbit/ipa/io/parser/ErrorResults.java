@@ -28,7 +28,7 @@ public class ErrorResults extends ParsedDataImpl implements ParsedData
 	public <I> I getContentbyInterface(final Class<I> interfaceDef)
 	{
 		throw new UnsupportedOperationException(
-				"Not possible to get this content as interface: "
+				"Not possible to get this content ("+bfd+") as interface ("+interfaceDef.getClass()+": "
 						+ getSummary());
 	}
 
