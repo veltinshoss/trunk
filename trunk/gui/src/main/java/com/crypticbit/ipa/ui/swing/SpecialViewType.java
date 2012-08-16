@@ -1,8 +1,10 @@
 package com.crypticbit.ipa.ui.swing;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import com.crypticbit.ipa.central.BackupFileView;
+import com.crypticbit.ipa.central.LogFactory;
 import com.crypticbit.ipa.entity.settings.MapsHistory;
 import com.crypticbit.ipa.entity.sqlite.CallHistory;
 import com.crypticbit.ipa.entity.sqlite.Messages.MessageType;
@@ -226,7 +228,13 @@ public enum SpecialViewType
 
 	public boolean isEnabled(Mediator mediator)
 	{
+		try {
 		return mediator.getBackupDirectory().getByInterface(
 				getBackupFileType().getMainInterface()) != null;
+		} catch (Exception e) {
+			LogFactory.getLogger().log(Level.WARNING,"Error trying to access file",e);
+			return false;
+			
+		}
 	}
 }
