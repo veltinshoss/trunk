@@ -476,7 +476,7 @@ public class MainFrame extends javax.swing.JFrame implements ErrorHandler,
 						logMenuItem.addActionListener(new ActionListener() {
 							@Override
 							public void actionPerformed(final ActionEvent arg0) {
-								mediator.showPanel(GeneralPanelTypes.LOG);
+								LogDialog.showDialog(MainFrame.this);
 							}
 						});
 						JMenuItem clearRegMenuItem = new JMenuItem();

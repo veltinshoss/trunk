@@ -29,12 +29,7 @@ enum GeneralPanelTypes {
 			mediator.getBackupDirectory().getAllEvents(progressIndicator);
 		}
 
-	}, LOG("Log",false) {
-
-		@Override
-		public ViewingPane create(Mediator mediator) {
-		return new LogView();
-		}
+	
 		
 	};
 	public abstract ViewingPane create(Mediator mediator);

@@ -1,5 +1,7 @@
 package com.crypticbit.ipa.ui.swing;
 
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.util.logging.ErrorManager;
 import java.util.logging.Filter;
 import java.util.logging.Formatter;
@@ -9,11 +11,11 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
+import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.crypticbit.ipa.central.LogFactory;
-
 
 /*
  Based on the work from:
@@ -22,21 +24,29 @@ import com.crypticbit.ipa.central.LogFactory;
  Apress Copyright 2003 
  ISBN:1590590996
  */
-public class LogView extends ViewingPane {
+public class LogDialog extends JDialog {
 
 	private int width;
-
 	private int height;
-
 	private JTextArea textArea = null;
-
 	private JScrollPane pane = null;
+	private static JDialog dialog;
+	private Frame frame;
 
-	public LogView() {
+	public static void showDialog(final Frame frame) {
+		dialog = new LogDialog(frame);
+		dialog.setSize(new Dimension(500, 500));
+		dialog.setLocationRelativeTo(frame);
+		dialog.setVisible(true);
+	}
+
+	public LogDialog(Frame frame) {
+		this.frame = frame;
 		textArea = new JTextArea();
 		pane = new JScrollPane(textArea);
 		add(pane);
 		LogFactory.getLogger().addHandler(new WindowHandler());
+
 	}
 
 	/**
@@ -49,15 +59,9 @@ public class LogView extends ViewingPane {
 		textArea.append(data);
 	}
 
-	@Override
-	public void cleanUp() {
-		// TODO Auto-generated method stub
-
-	}
-
 	class WindowHandler extends Handler {
 		// the window to which the logging is done
-		private LogView window = LogView.this;
+		private LogDialog window = LogDialog.this;
 
 		private Formatter formatter = null;
 
@@ -84,8 +88,11 @@ public class LogView extends ViewingPane {
 
 			// accessing super class methods to set the parameters
 			setLevel(level != null ? Level.parse(level) : Level.INFO);
-			setFilter(makeFilter(filter));
-			setFormatter(makeFormatter(formatter));
+			setFormatter(new SimpleFormatter());
+			// if (filter != null)
+			// setFilter(makeFilter(filter));
+			// if (formatter != null)
+			// setFormatter(makeFormatter(formatter));
 
 		}
 
