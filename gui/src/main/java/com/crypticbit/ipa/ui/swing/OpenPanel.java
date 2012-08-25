@@ -119,7 +119,6 @@ public class OpenPanel extends JXPanel implements ActionListener {
 		y.add(z, BorderLayout.SOUTH);
 		x.add(y);
 		scanForBackups();
-
 		tp.setEditable(false);
 
 		// License Pane (along bottom)		
