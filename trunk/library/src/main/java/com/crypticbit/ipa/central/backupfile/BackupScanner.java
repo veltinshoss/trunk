@@ -1,6 +1,8 @@
 package com.crypticbit.ipa.central.backupfile;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -8,6 +10,7 @@ import java.util.logging.Level;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
 import com.crypticbit.ipa.central.BackupDirectoryParser;
 import com.crypticbit.ipa.central.LogFactory;
@@ -18,15 +21,39 @@ public class BackupScanner {
 	private boolean stopScanning = false;
 
 	public void scanForBackups(BackupFound found, File root) {
+		File canonical = getCanonical(root);
+		scanForBackups(found, canonical, new HashSet<File>());
+	}
+
+	private File getCanonical(File root) {
+		File canonical = root;
+		try {
+			canonical = root.getCanonicalFile();
+		} catch (Exception e) {
+			// do nothing
+		}
+		return canonical;
+	}
+
+	public void scanForBackups(BackupFound found, File root, Set<File> history) {
 		if (root != null && root.exists() && root.canRead()
 				&& root.isDirectory()) {
-			if (BackupDirectoryParser.isBackup(root))
-				found.report(root);
-			for (File entry : root.listFiles()) {
+			File canonical = getCanonical(root);
+			if (history.contains(canonical)) {
+				LogFactory.getLogger().log(
+						Level.INFO,
+						"Skipping " + canonical
+								+ " as already seen - presumed symlink");
+				return;
+			} else
+				history.add(canonical);
+			if (BackupDirectoryParser.isBackup(canonical))
+				found.report(canonical);
+			for (File entry : canonical.listFiles()) {
 				if (stopScanning) {
 					return;
 				}
-				scanForBackups(found, entry);
+				scanForBackups(found, entry, history);
 			}
 		}
 	}
