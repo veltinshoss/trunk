@@ -94,7 +94,7 @@ public class EventList extends ArrayList<Event> {
 		Writer buffer = new StringWriter();
 		StreamResult streamResult = new StreamResult(buffer);
 		
-		StreamSource streamSource = new StreamSource(ClassLoader.getSystemClassLoader().getResourceAsStream("report.xsl"));
+		StreamSource streamSource = new StreamSource(this.getClass().getClassLoader().getResourceAsStream("report.xsl"));
 		
 		Transformer transformer = TransformerFactory.newInstance().newTransformer(streamSource);
 		transformer.transform(traxSource, streamResult);
