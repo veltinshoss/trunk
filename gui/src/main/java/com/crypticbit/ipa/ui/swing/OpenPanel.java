@@ -61,8 +61,7 @@ public class OpenPanel extends JXPanel implements ActionListener {
 
 		ImagePainter image;
 		try {
-			URL backgroundImage = ClassLoader.getSystemClassLoader()
-					.getResource("crypticbit-backdrop.jpg");
+			URL backgroundImage = this.getClass().getClassLoader().getResource("crypticbit-backdrop.jpg");
 			image = new ImagePainter(backgroundImage,
 					HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 			image.setScaleToFit(false);

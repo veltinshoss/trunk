@@ -44,8 +44,7 @@ public class KmlHandler
 
 	public JButton createExport()
 	{
-		JButton button = new JButton(new ImageIcon(ClassLoader
-				.getSystemClassLoader().getResource("icons/export.png"),
+		JButton button = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("icons/export.png"),
 				"Export to KML"));
 		button.addActionListener(new ActionListener() {
 
@@ -75,8 +74,7 @@ public class KmlHandler
 
 	public JButton createOpen()
 	{
-		JButton button = new JButton(new ImageIcon(ClassLoader
-				.getSystemClassLoader().getResource("icons/open-map.png"),
+		JButton button = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("icons/open-map.png"),
 				"Open Map"));
 		button.addActionListener(new ActionListener() {
 
