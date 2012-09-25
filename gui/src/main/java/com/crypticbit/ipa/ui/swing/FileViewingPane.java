@@ -52,14 +52,20 @@ class FileViewingPane extends ViewingPane implements HighlightChangeListener {
 					.getSpecialViewType(bfd.getParsedData().getViews());
 			if (specialViewType != null) 
 			{
-				
-				String name = specialViewType.getName();
-				SpecialView createSpecialView = specialViewType
-						.createSpecialView(mediator);
-				if( createSpecialView != null)
+				try
 				{
-					JComponent component = createSpecialView.getComponent();
-					this.add(name, component);
+					String name = specialViewType.getName();
+					SpecialView createSpecialView = specialViewType
+							.createSpecialView(mediator);
+					if( createSpecialView != null)
+					{
+						JComponent component = createSpecialView.getComponent();
+						this.add(name, component);
+					}
+				}
+				catch(Exception e)
+				{
+					LogFactory.getLogger().log(Level.WARNING, "Failed to create special view for " + bfd.getOriginalFileName() + ", " + specialViewType, e);
 				}
 			}
 			for (final Map.Entry<String, View> view : this.views) {
