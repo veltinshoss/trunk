@@ -86,6 +86,8 @@ public abstract class DynamicProxy<T> implements
 	{
 		this.interfaceDef = interfaceDef;
 	}
+	
+	private Set<Method> blackListedMethods = new HashSet<Method>();
 
 	protected String dynamicToString(final Class<?> interface0,
 			final Object proxy)
@@ -94,8 +96,7 @@ public abstract class DynamicProxy<T> implements
 		Set<String> duplicates = new HashSet<String>();
 		for (Method m : interface0.getMethods())
 		{
-
-			if (m.getName().startsWith("get")
+			if (!blackListedMethods.contains(m) && m.getName().startsWith("get")
 					&& (m.getParameterTypes().length == 0)
 					&& isMethodVisible(m) && duplicates.add(m.getName()))
 			{
@@ -104,10 +105,11 @@ public abstract class DynamicProxy<T> implements
 					Object invokeResponse = m.invoke(proxy);
 					result.add(m.getName().substring(3) + " = "
 							+ TypeFormatter.formatTypeAsString(invokeResponse));
-				} catch (Exception e)
+				} catch (Throwable e)
 				{
-					LogFactory.getLogger().log(Level.SEVERE,"Exception",e);
-					result.add(m.getName().substring(3) + "=<error>");
+				    	blackListedMethods.add(m);
+					LogFactory.getLogger().log(Level.SEVERE,"The method \""+m.getName()+"\" isn't available on \""+interfaceDef.getName()+"\"");
+					
 				}
 			}
 		}
