@@ -16,17 +16,18 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.crypticbit.ipa.central.IPhone;
-import com.crypticbit.ipa.entity.sqlite.Messages;
-import com.crypticbit.ipa.entity.sqlite.Messages.Message;
+import com.crypticbit.ipa.entity.sqlite.MessageDirection;
+import com.crypticbit.ipa.entity.sqlite.MessageBeforeIos6;
+import com.crypticbit.ipa.entity.sqlite.MessageBeforeIos6.Message;
 
 @SuppressWarnings("serial")
-public class SmsView extends JPanel implements SpecialView
+public class SmsBeforeIos6View extends JPanel implements SpecialView
 {
 	private TableRowSorter<TableModel> sorter;
 	private JTable table;
 private DisplayConverter displayConverter;
 	
-	SmsView(final Mediator mediator)
+	SmsBeforeIos6View(final Mediator mediator)
 	{
 		displayConverter = mediator.getDisplayConverter();
 		setLayout(new GridLayout(1, 1));
@@ -59,7 +60,7 @@ private DisplayConverter displayConverter;
 		return this;
 	}
 
-	public void setFilter(final Messages.MessageType filter)
+	public void setFilter(final MessageDirection filter)
 	{
 		this.sorter.setRowFilter(new RowFilter<TableModel, Integer>() {
 			@Override
@@ -74,14 +75,14 @@ private DisplayConverter displayConverter;
 	private void init(final IPhone backupDirectory)
 	{
 
-		List<Message> messages = backupDirectory.getByInterface(Messages.class);
+		List<Message> messages = backupDirectory.getByInterface(MessageBeforeIos6.class);
 
 		List<Object[]> results = new ArrayList<Object[]>();
 		for (Message message : messages)
 		{
 			results.add(new Object[] {
 					backupDirectory.lookupNumber(displayConverter.convertNumber(message.getAddress())),
-					displayConverter.convertString(message.getText()), message.getDate(), message.getFlags() });
+					displayConverter.convertString(message.getText()), message.getDate(), message.getDirection() });
 		}
 		this.table.setModel(new DefaultTableModel(results
 				.toArray(new Object[results.size()][]), new String[] {

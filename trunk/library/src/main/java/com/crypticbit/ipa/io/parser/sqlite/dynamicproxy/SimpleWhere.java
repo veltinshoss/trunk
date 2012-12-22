@@ -8,12 +8,14 @@ class SimpleWhere implements Where
 	private Expression e1;
 	private Expression e2;
 	private Where subClause;
+	private boolean selectingOnPrimaryKey = false;
 
-	SimpleWhere(final Expression e1, final Expression e2)
+	SimpleWhere(final Expression e1, final Expression e2, boolean selectingOnPrimaryKey)
 	{
 		this.e1 = e1;
 		this.e2 = e2;
 		this.subClause = Where.NULL_WHERE;
+		this.selectingOnPrimaryKey = selectingOnPrimaryKey;
 	}
 
 	SimpleWhere(final Expression e1, final Expression e2, final Where subClause)
@@ -36,6 +38,10 @@ class SimpleWhere implements Where
 	public boolean needsWhere()
 	{
 		return true;
+	}
+	
+	public boolean isSelectingOnPrimaryKey() {
+	    return selectingOnPrimaryKey;
 	}
 
 }
