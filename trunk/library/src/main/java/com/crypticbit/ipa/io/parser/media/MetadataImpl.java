@@ -8,7 +8,7 @@ import com.crypticbit.ipa.results.Location;
 import com.drew.lang.Rational;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifDirectory;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.GpsDirectory;
 
 public class MetadataImpl implements MetadataI {
@@ -63,12 +63,12 @@ public class MetadataImpl implements MetadataI {
 		if (metadata != null) {
 			try {
 				Directory directory = metadata
-						.getDirectory(ExifDirectory.class);
+						.getDirectory(ExifIFD0Directory.class);
 				if (directory != null
 						&& directory
-								.containsTag(ExifDirectory.TAG_DATETIME_ORIGINAL))
+								.containsTag(ExifIFD0Directory.TAG_DATETIME))
 					return directory
-							.getDate(ExifDirectory.TAG_DATETIME_ORIGINAL);
+							.getDate(ExifIFD0Directory.TAG_DATETIME);
 			} catch (Throwable e) {
 				LogFactory.getLogger().log(Level.INFO, "Problem extracting timemetadata");
 			}
