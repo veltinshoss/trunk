@@ -1,5 +1,7 @@
 package com.crypticbit.ipa.ui.swing;
 
+// code based on that from http://www.java2s.com/Code/Java/Database-SQL-JDBC/DatabaseBrowser.htm
+
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

@@ -22,12 +22,12 @@ public class ImageMetaDataPanel extends JTable
 
 		final List<String> entries = new ArrayList<String>();
 
-		Iterator<Directory> directories = metadata.getDirectoryIterator();
+		Iterator<Directory> directories = metadata.getDirectories().iterator();
 
 		while (directories.hasNext())
 		{
 			Directory directory = directories.next();
-			Iterator<Tag> tags = directory.getTagIterator();
+			Iterator<Tag> tags = directory.getTags().iterator();
 			while (tags.hasNext())
 			{
 				Tag tag = tags.next(); // use Tag.toString()
