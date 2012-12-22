@@ -109,7 +109,7 @@ public abstract class DynamicProxy<T> implements
 				{
 				    	blackListedMethods.add(m);
 					LogFactory.getLogger().log(Level.SEVERE,"The method \""+m.getName()+"\" isn't available on \""+interfaceDef.getName()+"\"");
-					
+					e.printStackTrace();
 				}
 			}
 		}

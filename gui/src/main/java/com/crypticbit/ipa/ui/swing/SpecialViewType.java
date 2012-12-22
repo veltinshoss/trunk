@@ -7,7 +7,7 @@ import com.crypticbit.ipa.central.BackupFileView;
 import com.crypticbit.ipa.central.LogFactory;
 import com.crypticbit.ipa.entity.settings.MapsHistory;
 import com.crypticbit.ipa.entity.sqlite.CallHistory;
-import com.crypticbit.ipa.entity.sqlite.Messages.MessageType;
+import com.crypticbit.ipa.entity.sqlite.MessageDirection;
 import com.crypticbit.ipa.ui.swing.map.MapView;
 
 public enum SpecialViewType
@@ -32,7 +32,7 @@ public enum SpecialViewType
 		@Override
 		public SpecialView createSpecialView(final Mediator mediator)
 		{
-			return new SmsView(mediator);
+			return new SmsAfterIos6View(mediator);
 		}
 
 		@Override
@@ -42,21 +42,21 @@ public enum SpecialViewType
 				@Override
 				void callback(final ViewingPane viewingPane)
 				{
-					((SmsView) viewingPane.getComponentAt(0)).clearFilter();
+					((SmsAfterIos6View) viewingPane.getComponentAt(0)).clearFilter();
 				}
 			}), new Event("Sent", new Callback() {
 				@Override
 				void callback(final ViewingPane viewingPane)
 				{
-					((SmsView) viewingPane.getComponentAt(0))
-							.setFilter(MessageType.SENT);
+					((SmsAfterIos6View) viewingPane.getComponentAt(0))
+							.setFilter(MessageDirection.SENT);
 				}
 			}), new Event("Received", new Callback() {
 				@Override
 				void callback(final ViewingPane viewingPane)
 				{
-					((SmsView) viewingPane.getComponentAt(0))
-							.setFilter(MessageType.RECEIVED);
+					((SmsAfterIos6View) viewingPane.getComponentAt(0))
+							.setFilter(MessageDirection.RECEIVED);
 				}
 			}) };
 		}

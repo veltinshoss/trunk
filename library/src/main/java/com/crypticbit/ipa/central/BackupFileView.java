@@ -2,7 +2,6 @@ package com.crypticbit.ipa.central;
 
 import com.crypticbit.ipa.central.backupfile.BackupFile;
 import com.crypticbit.ipa.entity.settings.DateTimePrefs;
-import com.crypticbit.ipa.entity.settings.DateTimePrefs.DateTimeItem;
 import com.crypticbit.ipa.entity.settings.MailAccounts;
 import com.crypticbit.ipa.entity.settings.MailAccounts.DeliveryAccounts;
 import com.crypticbit.ipa.entity.settings.MapsHistory;
@@ -17,10 +16,10 @@ import com.crypticbit.ipa.entity.sqlite.FacebookFriends.FacebookFriend;
 import com.crypticbit.ipa.entity.sqlite.LocationD;
 import com.crypticbit.ipa.entity.sqlite.LocationD.Location;
 import com.crypticbit.ipa.entity.sqlite.LocationD.WifiLocation;
-import com.crypticbit.ipa.entity.sqlite.Messages;
-import com.crypticbit.ipa.entity.sqlite.Messages.Message;
 import com.crypticbit.ipa.entity.sqlite.Notes;
 import com.crypticbit.ipa.entity.sqlite.Notes.Note;
+import com.crypticbit.ipa.entity.sqlite.MessageAfterIos6;
+import com.crypticbit.ipa.entity.sqlite.MessageAfterIos6.Message;
 import com.crypticbit.ipa.entity.sqlite.TimeBasedInformation;
 import com.crypticbit.ipa.entity.sqlite.TimeBasedInformation.Alarm;
 import com.crypticbit.ipa.entity.sqlite.TimeBasedInformation.Event;
@@ -65,7 +64,7 @@ public enum BackupFileView
 			SafariBookmarks.class),
 	SMS(
 			"Library/SMS/sms.db",
-			Messages.class,
+			MessageAfterIos6.class ,
 			Message.class),
 	VOICEMAIL(
 			"Library/Voicemail/voicemail.db",
