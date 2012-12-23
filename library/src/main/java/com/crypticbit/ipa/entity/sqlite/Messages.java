@@ -14,6 +14,7 @@ import com.crypticbit.ipa.io.parser.sqlite.dynamicproxy.SqlField;
 import com.crypticbit.ipa.io.parser.sqlite.dynamicproxy.SqlRelation;
 import com.crypticbit.ipa.io.parser.sqlite.dynamicproxy.SqlTable;
 import com.crypticbit.ipa.io.parser.sqlite.dynamicproxy.SqlVersionOptions;
+import com.crypticbit.ipa.io.util.IphoneDate;
 import com.crypticbit.ipa.io.util.PosixDate;
 
 public interface Messages extends List<Messages.Message> {
@@ -22,10 +23,6 @@ public interface Messages extends List<Messages.Message> {
     @WhatTag(name = "Message")
     @SqlTable(tableName = "MESSAGE")
     public interface Message extends Conceptable {
-	@WhenTag(tag = "sent", field = Field.DATE)
-	@SqlField("date")
-	public PosixDate getDate();
-
 	@DescriptionTag
 	@SqlField("text")
 	public String getText();
@@ -36,10 +33,14 @@ public interface Messages extends List<Messages.Message> {
     @SqlTable(tableName = "MESSAGE")
     @SqlValidateFieldsPresent
     public interface MessageAfterIos6 extends Message {
-	// @WhoTag(tag = "recipient", field = WhoTag.Field.PHONE_NUMBER)
 	@SqlField("handle_id")
 	public int getHandleId();
 
+	@WhenTag(tag = "sent", field = Field.DATE)
+	@SqlField("date")
+	public IphoneDate getDate();
+	
+	@WhoTag(tag = "recipient", field = WhoTag.Field.PHONE_NUMBER)
 	@SqlRelation(primary = "getRowId", foreign = "getHandleId")
 	public Handle getHandle();
 
@@ -66,6 +67,11 @@ public interface Messages extends List<Messages.Message> {
     @SqlTable(tableName = "MESSAGE")
     @SqlValidateFieldsPresent
     public interface MessageBeforeIos6 extends Message {
+	
+	@WhenTag(tag = "sent", field = Field.DATE)
+	@SqlField("date")
+	public PosixDate getDate();
+	
 	@WhoTag(tag = "recipient", field = WhoTag.Field.PHONE_NUMBER)
 	@SqlField("address")
 	public String getAddress();
