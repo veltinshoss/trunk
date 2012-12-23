@@ -17,12 +17,12 @@ public interface DisplayConverter
 
 		public String convertString(String string)
 		{
-			return string;
+			return string==null ? "" : string;
 		}
 
 		public String convertNumber(String number)
 		{
-			return number;
+			return number==null ? "" : number;
 		}
 	}
 
