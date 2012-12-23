@@ -18,8 +18,8 @@ import com.crypticbit.ipa.entity.sqlite.LocationD.Location;
 import com.crypticbit.ipa.entity.sqlite.LocationD.WifiLocation;
 import com.crypticbit.ipa.entity.sqlite.Notes;
 import com.crypticbit.ipa.entity.sqlite.Notes.Note;
-import com.crypticbit.ipa.entity.sqlite.MessageAfterIos6;
-import com.crypticbit.ipa.entity.sqlite.MessageAfterIos6.Message;
+import com.crypticbit.ipa.entity.sqlite.Messages;
+import com.crypticbit.ipa.entity.sqlite.Messages.Message;
 import com.crypticbit.ipa.entity.sqlite.TimeBasedInformation;
 import com.crypticbit.ipa.entity.sqlite.TimeBasedInformation.Alarm;
 import com.crypticbit.ipa.entity.sqlite.TimeBasedInformation.Event;
@@ -64,7 +64,7 @@ public enum BackupFileView
 			SafariBookmarks.class),
 	SMS(
 			"Library/SMS/sms.db",
-			MessageAfterIos6.class ,
+			Messages.class ,
 			Message.class),
 	VOICEMAIL(
 			"Library/Voicemail/voicemail.db",

@@ -32,7 +32,7 @@ public enum SpecialViewType
 		@Override
 		public SpecialView createSpecialView(final Mediator mediator)
 		{
-			return new SmsAfterIos6View(mediator);
+			return new SmsView(mediator);
 		}
 
 		@Override
@@ -42,20 +42,20 @@ public enum SpecialViewType
 				@Override
 				void callback(final ViewingPane viewingPane)
 				{
-					((SmsAfterIos6View) viewingPane.getComponentAt(0)).clearFilter();
+					((SmsView) viewingPane.getComponentAt(0)).clearFilter();
 				}
 			}), new Event("Sent", new Callback() {
 				@Override
 				void callback(final ViewingPane viewingPane)
 				{
-					((SmsAfterIos6View) viewingPane.getComponentAt(0))
+					((SmsView) viewingPane.getComponentAt(0))
 							.setFilter(MessageDirection.SENT);
 				}
 			}), new Event("Received", new Callback() {
 				@Override
 				void callback(final ViewingPane viewingPane)
 				{
-					((SmsAfterIos6View) viewingPane.getComponentAt(0))
+					((SmsView) viewingPane.getComponentAt(0))
 							.setFilter(MessageDirection.RECEIVED);
 				}
 			}) };
