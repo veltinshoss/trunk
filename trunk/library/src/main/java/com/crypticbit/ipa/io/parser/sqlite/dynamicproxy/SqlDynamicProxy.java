@@ -69,9 +69,20 @@ public class SqlDynamicProxy<T> extends DynamicProxy<T> {
 	    final SqlDataSource dataSource) throws SqlMappingException,
 	    SQLException {
 
-	final List data = loadData(
-		(Class) ((ParameterizedType) interfaceDef.getGenericInterfaces()[0])
-			.getActualTypeArguments()[0], dataSource);
+	// this magic finds "AddressBook.Person" from a class that
+	// "extends List<AddressBook.Person>"
+	Class typeOfEachElementToBeReturned = (Class) ((ParameterizedType) interfaceDef
+		.getGenericInterfaces()[0]).getActualTypeArguments()[0];
+
+	SqlVersionOptions versionAnnotation = (SqlVersionOptions) typeOfEachElementToBeReturned
+		.getAnnotation(SqlVersionOptions.class);
+	if (versionAnnotation != null) {
+	    typeOfEachElementToBeReturned = findMostSuitedVersion(
+		    typeOfEachElementToBeReturned, versionAnnotation,
+		    dataSource);
+	}
+
+	final List data = loadData(typeOfEachElementToBeReturned, dataSource);
 	S s = (S) Proxy.newProxyInstance(interfaceDef.getClassLoader(),
 		new Class[] { interfaceDef }, new InvocationHandler() {
 
@@ -93,6 +104,29 @@ public class SqlDynamicProxy<T> extends DynamicProxy<T> {
 	return s;
     }
 
+    // FIXME - This should really be cached - but to do that we need to move to
+    // a factory pattern so we can hold state (static would be bad, because we
+    // need new state for each file we open
+    private static Class findMostSuitedVersion(
+	    Class typeOfEachElementToBeReturned,
+	    SqlVersionOptions versionAnnotation, SqlDataSource dataSource)
+	    throws SqlMappingException, SQLException {
+	for (Class clazz : versionAnnotation.value()) {
+	    assert (typeOfEachElementToBeReturned.isAssignableFrom(clazz));
+	    if (Table.validateTable(clazz, dataSource).isEmpty())
+		return clazz;
+	    else
+		LogFactory
+			.getLogger()
+			.log(Level.INFO,
+				"Not using "
+					+ clazz.getName()
+					+ " because the following fields are not available: "
+					+ Table.validateTable(clazz, dataSource));
+	}
+	return null;
+    }
+
     private static Class[] asClass(Object[] args) {
 	if (args == null)
 	    return null;
@@ -110,8 +144,9 @@ public class SqlDynamicProxy<T> extends DynamicProxy<T> {
     static <S> List<S> loadData(final Class<S> interfaceDef,
 	    final SqlDataSource dataSource, final Where inputWhere)
 	    throws SqlMappingException, SQLException {
+	Table table = Table.createAndValidateTable(interfaceDef, inputWhere,
+		dataSource);
 	Connection connection = dataSource.getDbConnection();
-	Table table = Table.createTable(interfaceDef, inputWhere, dataSource);
 	ResultSet rs = table.getResults(connection.createStatement(
 		ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
 	CachedRowSetImpl crs = new CachedRowSetImpl();
@@ -167,9 +202,8 @@ public class SqlDynamicProxy<T> extends DynamicProxy<T> {
 		    annotation);
 	    if (criteria.isSelectingOnPrimaryKey()) {
 
-		List c = loadData(getUnderlyingReturnType(m), this.dataSource,
-			criteria);
-		System.out.println("## Searched for "+criteria.formWhereClause() +" and found "+c.size());
+		List<?> c = loadData(getUnderlyingReturnType(m),
+			this.dataSource, criteria);
 		if (c.size() > 0)
 		    return DynamicProxy.coerceValueToType(m.getReturnType(),
 			    c.get(0));
