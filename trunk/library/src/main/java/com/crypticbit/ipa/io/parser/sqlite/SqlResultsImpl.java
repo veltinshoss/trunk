@@ -44,8 +44,6 @@ public class SqlResultsImpl extends ParsedDataImpl implements
 			return SqlDynamicProxy.loadRootData(interfaceDef,
 					this.sqlDataSource);
 		} catch (Exception e) {
-			LogFactory.getLogger().log(Level.SEVERE,"Exception",e);
-			// FIXME error handling
 			throw new BadFileFormatException("Unable to load data into type \""
 					+ interfaceDef.getName() + "\"", e);
 		}
